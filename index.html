@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My AI</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+    .app {
+      max-width: 700px;
+      margin: auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #111;
+      color: white;
+      padding: 18px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+    }
+    .message {
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 12px;
+      max-width: 85%;
+    }
+    .user {
+      background: #d9fdd3;
+      margin-left: auto;
+    }
+    .ai {
+      background: white;
+      margin-right: auto;
+    }
+    .input-area {
+      display: flex;
+      padding: 10px;
+      background: white;
+      gap: 8px;
+    }
+    input {
+      flex: 1;
+      padding: 13px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 13px 18px;
+      border: none;
+      border-radius: 10px;
+      background: #111;
+      color: white;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>🤖 My AI</header>
+
+    <div id="chat">
+      <div class="message ai">Hello! I'm your AI assistant.</div>
+    </div>
+
+    <div class="input-area">
+      <input id="message" placeholder="Type a message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    function sendMessage() {
+      const input = document.getElementById("message");
+      const chat = document.getElementById("chat");
+
+      if (!input.value.trim()) return;
+
+      const userMessage = document.createElement("div");
+      userMessage.className = "message user";
+      userMessage.textContent = input.value;
+      chat.appendChild(userMessage);
+
+      const aiMessage = document.createElement("div");
+      aiMessage.className = "message ai";
+      aiMessage.textContent = "Your AI connection will be added next.";
+      chat.appendChild(aiMessage);
+
+      input.value = "";
+      chat.scrollTop = chat.scrollHeight;
+    }
+  </script>
+</body>
+</html>
