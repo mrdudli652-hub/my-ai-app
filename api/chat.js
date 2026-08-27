@@ -4,10 +4,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message } = req.body || {};
+    const { messages } = req.body || {};
 
-    if (!message) {
-      return res.status(400).json({ error: "Message is required" });
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return res.status(400).json({ error: "Messages are required" });
     }
 
     const response = await fetch(
@@ -19,15 +19,17 @@ export default async function handler(req, res) {
           "x-goog-api-key": process.env.GEMINI_API_KEY
         },
         body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: message
-                }
-              ]
-            }
-          ]
+          systemInstruction: {
+            parts: [
+              {
+                text: "You are SamanAI, a helpful AI assistant. You understand Kurdish Sorani and should answer the user in the same language they use."
+              }
+            ]
+          },
+          contents: messages.map((m) => ({
+            role: m.role === "assistant" ? "model" : "user",
+            parts: [{ text: m.content }]
+          }))
         })
       }
     );
@@ -41,8 +43,9 @@ export default async function handler(req, res) {
     }
 
     const reply =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "No response received.";
+      data.candidates?.[0]?.content?.parts
+        ?.map((part) => part.text || "")
+        .join("") || "No response received.";
 
     return res.status(200).json({ reply });
 
