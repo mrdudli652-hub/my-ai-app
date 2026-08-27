@@ -23,7 +23,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { messages, image } = req.body || {};
+    const { messages, image, imageType } = req.body || {};
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({ error: "Messages are required" });
@@ -54,7 +54,7 @@ export default async function handler(req, res) {
             },
             {
               inline_data: {
-                mime_type: "image/jpeg",
+                mime_type: imageType || "image/jpeg",
                 data: image
               }
             }
