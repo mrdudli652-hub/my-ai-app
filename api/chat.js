@@ -148,17 +148,18 @@ if (!response.ok && response.status === 429) {
         .join("") ||
       "No response received.";
 
-    const recentMessages = messages
-      .slice(-10)
-      .map((m) => `${m.role}: ${m.content}`)
-      .join("\n");
+    const newMemory = messages
+  .slice(-30)
+  .map((m) => `${m.role}: ${m.content}`)
+  .join("\n");
 
-    await redis([
-      "SET",
-      memoryKey,
-      recentMessages,
-    
-    ]);
+if (newMemory.trim()) {
+  await redis([
+    "SET",
+    memoryKey,
+    newMemory
+  ]);
+}
 
     return res.status(200).json({ reply });
 
