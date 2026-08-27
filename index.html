@@ -268,8 +268,6 @@ function startVoice() {
 
 }
 async function handleImage(event) {
-  alert("وێنە هەڵبژێردرا");
-  
   const file = event.target.files[0];
 
   if (!file) return;
@@ -287,14 +285,9 @@ async function handleImage(event) {
   imageMessage.appendChild(image);
   chat.appendChild(imageMessage);
 
-  const loading = document.createElement("div");
-  loading.className = "message ai";
-  loading.textContent = "SamanAI وێنەکە دەبینێت... 👀";
-  chat.appendChild(loading);
+  const base64 = await fileToBase64(file);
 
   try {
-    const base64 = await fileToBase64(file);
-
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: {
@@ -302,38 +295,39 @@ async function handleImage(event) {
       },
       body: JSON.stringify({
         messages: messages,
-        image: base64
+        image: base64,
         imageType: file.type
       })
     });
 
     const data = await response.json();
 
-    if (!response.ok) {
-      loading.textContent = data.error || "هەڵەیەک ڕوویدا.";
-    } else {
-      loading.textContent = data.reply;
+    const reply = document.createElement("div");
+    reply.className = "message ai";
+    reply.textContent = data.reply || data.error || "هەڵەیەک ڕوویدا.";
+
+    chat.appendChild(reply);
+
+    if (data.reply) {
       speak(data.reply);
     }
 
   } catch (error) {
-    loading.textContent = "نەتوانرا وێنەکە بنێردرێت.";
+    const errorMessage = document.createElement("div");
+    errorMessage.className = "message ai";
+    errorMessage.textContent = "نەتوانرا وێنەکە بنێردرێت.";
+    chat.appendChild(errorMessage);
   }
 
-  event.target.value = "";
   chat.scrollTop = chat.scrollHeight;
 }
 
-
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
-
     const reader = new FileReader();
 
     reader.onload = () => {
-      const result = reader.result;
-
-      resolve(result.split(",")[1]);
+      resolve(reader.result.split(",")[1]);
     };
 
     reader.onerror = reject;
