@@ -254,7 +254,77 @@ function startVoice() {
   }
 
 }
+async function handleImage(event) {
+  const file = event.target.files[0];
 
+  if (!file) return;
+
+  const chat = document.getElementById("chat");
+
+  const imageMessage = document.createElement("div");
+  imageMessage.className = "message user";
+
+  const image = document.createElement("img");
+  image.src = URL.createObjectURL(file);
+  image.style.maxWidth = "100%";
+  image.style.borderRadius = "12px";
+
+  imageMessage.appendChild(image);
+  chat.appendChild(imageMessage);
+
+  const loading = document.createElement("div");
+  loading.className = "message ai";
+  loading.textContent = "SamanAI وێنەکە دەبینێت... 👀";
+  chat.appendChild(loading);
+
+  try {
+    const base64 = await fileToBase64(file);
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        messages: messages,
+        image: base64
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      loading.textContent = data.error || "هەڵەیەک ڕوویدا.";
+    } else {
+      loading.textContent = data.reply;
+      speak(data.reply);
+    }
+
+  } catch (error) {
+    loading.textContent = "نەتوانرا وێنەکە بنێردرێت.";
+  }
+
+  event.target.value = "";
+  chat.scrollTop = chat.scrollHeight;
+}
+
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const result = reader.result;
+
+      resolve(result.split(",")[1]);
+    };
+
+    reader.onerror = reject;
+
+    reader.readAsDataURL(file);
+  });
+}
 async function sendMessage() {
 
   const input =
