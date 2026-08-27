@@ -151,15 +151,20 @@
   <div class="status" id="status"></div>
 
   <div class="input-area">
-    <button id="mic" onclick="startVoice()">🎤</button>
-<button id="imageBtn" onclick="document.getElementById('imageInput').click()">📷</button>
+    <<button
+  id="imageBtn"
+  type="button"
+  onclick="document.getElementById('imageInput').click()">
+  📷
+</button>
 
-<input
+<<<input
   id="imageInput"
   type="file"
   accept="image/*"
-  style="display:none"
   onchange="handleImage(event)"
+>
+>
 >
     <input
       id="message"
@@ -376,7 +381,7 @@ async function sendMessage() {
     "message ai";
 
   loading.textContent =
-    "SamanAI بیر دەکاتەوە... 🤔";
+    "SamanAI وەڵام دەداتەوە... 🤔";
 
   chat.appendChild(loading);
 
