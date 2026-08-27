@@ -192,8 +192,17 @@ if (SpeechRecognition) {
 
   recognition.onresult = function(event) {
 
-    const text =
-      event.results[0][0].transcript;
+    let text =
+  event.results[0][0].transcript;
+
+text = text
+  .replace(/سومەر/gi, "سامان")
+  .replace(/سۆمەر/gi, "سامان")
+  .replace(/سومار/gi, "سامان")
+  .replace(/Sumer/gi, "Saman");
+
+document.getElementById("message").value = text;
+  
 
     document.getElementById("message").value = text;
 
