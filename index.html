@@ -152,7 +152,15 @@
 
   <div class="input-area">
     <button id="mic" onclick="startVoice()">🎤</button>
+<button id="imageBtn" onclick="document.getElementById('imageInput').click()">📷</button>
 
+<input
+  id="imageInput"
+  type="file"
+  accept="image/*"
+  style="display:none"
+  onchange="handleImage(event)"
+>
     <input
       id="message"
       placeholder="نامەکەت بنووسە..."
