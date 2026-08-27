@@ -135,11 +135,49 @@ if (!response.ok && response.status === 429) {
   }
 
   const reply =
-    data.choices?.[0]?.message?.content ||
-    "No response received.";
+  data.choices?.[0]?.message?.content ||
+  data.candidates?.[0]?.content?.parts
+    ?.map((part) => part.text || "")
+    .join("") ||
+  "No response received.";
 
-  return res.status(200).json({ reply });
+const userMessages = messages
+  .filter((m) => m.role === "user")
+  .map((m) => m.content)
+  .join("\n");
+
+const nameMatch = userMessages.match(
+  /(?:ناوم|ناوی من|my name is|i am|i'm)\s+([^\n،,.!?]+)/i
+);
+
+if (nameMatch) {
+  const detectedName = nameMatch[1].trim();
+
+  if (detectedName) {
+    await redis([
+      "SET",
+      nameKey,
+      detectedName
+    ]);
+  }
 }
+
+const newMemory = messages
+  .slice(-20)
+  .map((m) => `${m.role}: ${m.content}`)
+  .join("\n");
+
+if (newMemory.trim()) {
+  await redis([
+    "SET",
+    memoryKey,
+    newMemory
+  ]);
+}
+
+return res.status(200).json({ reply });
+
+  } catch (error) {
 
     if (!response.ok) {
       return res.status(response.status).json({
