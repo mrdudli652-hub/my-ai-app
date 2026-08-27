@@ -66,32 +66,75 @@ export default async function handler(req, res) {
       }));
     }
 
-    const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": process.env.GEMINI_API_KEY
-        },
-        body: JSON.stringify({
-          systemInstruction: {
-            parts: [
-              {
-                text:
-                  "You are SamanAI, a helpful AI assistant. " +
-                  "Understand Kurdish Sorani and answer in the user's language. " +
-                  "Use the memory when useful." +
-                  memoryText
-              }
-            ]
-          },
-          contents
-        })
-      }
-    );
+    let response = await fetch(
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": process.env.GEMINI_API_KEY
+    },
+    body: JSON.stringify({
+      systemInstruction: {
+        parts: [
+          {
+            text:
+              "You are SamanAI, a helpful AI assistant. " +
+              "Understand Kurdish Sorani and answer in the user's language. " +
+              "Use the memory when useful." +
+              memoryText
+          }
+        ]
+      },
+      contents
+    })
+  }
+);
 
-    const data = await response.json();
+let data = await response.json();
+
+if (!response.ok && response.status === 429) {
+  response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "openrouter/free",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are SamanAI. Answer in Kurdish Sorani when appropriate. " +
+              "Be helpful and concise." +
+              memoryText
+          },
+          {
+            role: "user",
+            content: "Please answer the user's request."
+          }
+        ]
+      })
+    }
+  );
+
+  data = await response.json();
+
+  if (!response.ok) {
+    return res.status(response.status).json({
+      error: data.error?.message || "OpenRouter error"
+    });
+  }
+
+  const reply =
+    data.choices?.[0]?.message?.content ||
+    "No response received.";
+
+  return res.status(200).json({ reply });
+}
 
     if (!response.ok) {
       return res.status(response.status).json({
