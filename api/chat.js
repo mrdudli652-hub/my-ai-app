@@ -23,7 +23,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { messages } = req.body || {};
+    const { messages, image } = req.body || {};
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({ error: "Messages are required" });
@@ -31,12 +31,42 @@ export default async function handler(req, res) {
 
     const memoryKey = "samanai:memory:default";
 
-    // Read previous memory
     const savedMemory = await redis(["GET", memoryKey]);
 
     const memoryText = savedMemory
       ? `\nImportant memory about the user:\n${savedMemory}\n`
       : "";
+
+    let contents;
+
+    if (image) {
+      const lastMessage =
+        messages[messages.length - 1]?.content || "Analyze this image.";
+
+      contents = [
+        {
+          role: "user",
+          parts: [
+            {
+              text:
+                lastMessage +
+                "\n\nPlease analyze the attached image and answer in Kurdish Sorani."
+            },
+            {
+              inline_data: {
+                mime_type: "image/jpeg",
+                data: image
+              }
+            }
+          ]
+        }
+      ];
+    } else {
+      contents = messages.map((m) => ({
+        role: m.role === "assistant" ? "model" : "user",
+        parts: [{ text: m.content }]
+      }));
+    }
 
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
@@ -48,18 +78,17 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           systemInstruction: {
-            parts: [{
-              text:
-                "You are SamanAI, a helpful AI assistant. " +
-                "Understand Kurdish Sorani and answer in the user's language. " +
-                "Use the memory when useful." +
-                memoryText
-            }]
+            parts: [
+              {
+                text:
+                  "You are SamanAI, a helpful AI assistant. " +
+                  "Understand Kurdish Sorani and answer in the user's language. " +
+                  "Use the memory when useful." +
+                  memoryText
+              }
+            ]
           },
-          contents: messages.map((m) => ({
-            role: m.role === "assistant" ? "model" : "user",
-            parts: [{ text: m.content }]
-          }))
+          contents
         })
       }
     );
@@ -78,7 +107,6 @@ export default async function handler(req, res) {
         .join("") ||
       "No response received.";
 
-    // Save recent conversation as memory
     const recentMessages = messages
       .slice(-10)
       .map((m) => `${m.role}: ${m.content}`)
