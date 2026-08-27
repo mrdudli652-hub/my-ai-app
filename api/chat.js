@@ -10,45 +10,41 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: "gpt-5-mini",
-        input: message
-      })
-    });
+    const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": process.env.GEMINI_API_KEY
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: message
+                }
+              ]
+            }
+          ]
+        })
+      }
+    );
 
     const data = await response.json();
 
     if (!response.ok) {
       return res.status(response.status).json({
-        error: data.error?.message || "OpenAI API error"
+        error: data.error?.message || "Gemini API error"
       });
     }
 
-    let reply = "";
+    const reply =
+      data.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No response received.";
 
-    if (data.output_text) {
-      reply = data.output_text;
-    } else if (Array.isArray(data.output)) {
-      for (const item of data.output) {
-        if (Array.isArray(item.content)) {
-          for (const content of item.content) {
-            if (content.text) {
-              reply += content.text;
-            }
-          }
-        }
-      }
-    }
-
-    return res.status(200).json({
-      reply: reply || "No text response received."
-    });
+    return res.status(200).json({ reply });
 
   } catch (error) {
     return res.status(500).json({
