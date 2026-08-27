@@ -157,8 +157,7 @@ if (!response.ok && response.status === 429) {
       "SET",
       memoryKey,
       recentMessages,
-      "EX",
-      "2592000"
+    
     ]);
 
     return res.status(200).json({ reply });
