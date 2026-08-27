@@ -28,12 +28,17 @@ export default async function handler(req, res) {
   
 
     const memoryKey = "samanai:memory:default";
-
+const nameKey = "samanai:user:name";
+const savedName = await redis(["GET", nameKey]);
     const savedMemory = await redis(["GET", memoryKey]);
 
-    const memoryText = savedMemory
-      ? `\nImportant memory about the user:\n${savedMemory}\n`
-      : "";
+    const memoryText =
+  (savedMemory
+    ? `\nImportant memory about the user:\n${savedMemory}\n`
+    : "") +
+  (savedName
+    ? `\nThe user's name is ${savedName}. Always remember and use this name when appropriate.\n`
+    : "");
 
     let contents;
 
@@ -147,9 +152,28 @@ if (!response.ok && response.status === 429) {
         ?.map((part) => part.text || "")
         .join("") ||
       "No response received.";
+const userMessages = messages
+  .filter((m) => m.role === "user")
+  .map((m) => m.content)
+  .join("\n");
 
+const nameMatch = userMessages.match(
+  /(?:ناوم|ناوی من|my name is|i am|i'm)\s+(?:ناوەم?\s*)?([^\n،,.!?]+)/i
+);
+
+if (nameMatch) {
+  const detectedName = nameMatch[1].trim();
+
+  if (detectedName) {
+    await redis([
+      "SET",
+      nameKey,
+      detectedName
+    ]);
+  }
+}
     const newMemory = messages
-  .slice(-30)
+  .slice(-20)
   .map((m) => `${m.role}: ${m.content}`)
   .join("\n");
 
