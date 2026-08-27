@@ -182,7 +182,15 @@
 let messages = [];
 
 let recognition = null;
+document.getElementById("imageInput").addEventListener("change", function(event) {
+  const file = event.target.files[0];
 
+  if (file) {
+    alert("وێنەکە هەڵبژێردرا: " + file.name);
+  } else {
+    alert("هیچ وێنەیەک هەڵنەبژێردرا");
+  }
+});
 const SpeechRecognition =
   window.SpeechRecognition ||
   window.webkitSpeechRecognition;
