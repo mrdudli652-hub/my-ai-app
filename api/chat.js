@@ -25,9 +25,7 @@ export default async function handler(req, res) {
   try {
     const { messages, image, imageType } = req.body || {};
 
-    if (!Array.isArray(messages) || messages.length === 0) {
-      return res.status(400).json({ error: "Messages are required" });
-    }
+  
 
     const memoryKey = "samanai:memory:default";
 
