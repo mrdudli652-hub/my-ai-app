@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ku" dir="rtl">
 <head>
@@ -103,16 +102,29 @@
     }
 
     button {
-      padding: 0 20px;
+      min-width: 48px;
+      height: 48px;
       border: none;
       border-radius: 14px;
       background: #111827;
       color: white;
-      font-size: 16px;
+      font-size: 20px;
+      cursor: pointer;
     }
 
     button:disabled {
       opacity: .5;
+    }
+
+    #mic.recording {
+      background: #dc2626;
+    }
+
+    .status {
+      text-align: center;
+      font-size: 12px;
+      color: #777;
+      padding: 4px;
     }
   </style>
 </head>
@@ -131,14 +143,23 @@
     <div class="welcome" id="welcome">
       <div class="logo">🤖</div>
       <h1>بەخێربێیت بۆ SamanAI</h1>
-      <p>پرسیارێکت هەیە؟ لێرە بینووسە.</p>
+      <p>دەتوانیت بنووسیت یان قسە بکەیت 🎤</p>
     </div>
 
   </div>
 
+  <div class="status" id="status"></div>
+
   <div class="input-area">
-    <input id="message" placeholder="نامەکەت بنووسە..." autocomplete="off">
-    <button id="send" onclick="sendMessage()">ناردن</button>
+    <button id="mic" onclick="startVoice()">🎤</button>
+
+    <input
+      id="message"
+      placeholder="نامەکەت بنووسە..."
+      autocomplete="off"
+    >
+
+    <button id="send" onclick="sendMessage()">➤</button>
   </div>
 
 </div>
@@ -147,22 +168,106 @@
 
 let messages = [];
 
+let recognition = null;
+
+const SpeechRecognition =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+
+  recognition = new SpeechRecognition();
+
+  recognition.lang = "ku";
+
+  recognition.continuous = false;
+
+  recognition.interimResults = false;
+
+  recognition.onstart = function() {
+    document.getElementById("mic").classList.add("recording");
+    document.getElementById("status").textContent =
+      "🎤 گوێم لێتە...";
+  };
+
+  recognition.onresult = function(event) {
+
+    const text =
+      event.results[0][0].transcript;
+
+    document.getElementById("message").value = text;
+
+    document.getElementById("status").textContent =
+      "دەقەکە ئامادەیە";
+
+    sendMessage();
+  };
+
+  recognition.onerror = function() {
+
+    document.getElementById("status").textContent =
+      "نەتوانرا دەنگ وەرگیرێت.";
+
+    document.getElementById("mic").classList.remove("recording");
+  };
+
+  recognition.onend = function() {
+
+    document.getElementById("mic").classList.remove("recording");
+
+  };
+
+}
+
+function startVoice() {
+
+  if (!recognition) {
+
+    alert(
+      "Browser ـەکەت Speech Recognition پشتگیری ناکات. Chrome تاقی بکەرەوە."
+    );
+
+    return;
+  }
+
+  try {
+    recognition.start();
+  } catch (error) {
+    console.log(error);
+  }
+
+}
+
 async function sendMessage() {
 
-  const input = document.getElementById("message");
-  const button = document.getElementById("send");
-  const chat = document.getElementById("chat");
-  const welcome = document.getElementById("welcome");
+  const input =
+    document.getElementById("message");
 
-  const message = input.value.trim();
+  const button =
+    document.getElementById("send");
+
+  const chat =
+    document.getElementById("chat");
+
+  const message =
+    input.value.trim();
 
   if (!message) return;
 
+  const welcome =
+    document.getElementById("welcome");
+
   if (welcome) welcome.remove();
 
-  const userMessage = document.createElement("div");
-  userMessage.className = "message user";
-  userMessage.textContent = message;
+  const userMessage =
+    document.createElement("div");
+
+  userMessage.className =
+    "message user";
+
+  userMessage.textContent =
+    message;
+
   chat.appendChild(userMessage);
 
   messages.push({
@@ -171,59 +276,103 @@ async function sendMessage() {
   });
 
   input.value = "";
+
   button.disabled = true;
 
-  const loading = document.createElement("div");
-  loading.className = "message ai";
-  loading.textContent = "SamanAI بیر دەکاتەوە... 🤔";
+  const loading =
+    document.createElement("div");
+
+  loading.className =
+    "message ai";
+
+  loading.textContent =
+    "SamanAI بیر دەکاتەوە... 🤔";
+
   chat.appendChild(loading);
 
   try {
 
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        messages: messages
-      })
-    });
+    const response =
+      await fetch("/api/chat", {
 
-    const data = await response.json();
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          messages: messages
+        })
+
+      });
+
+    const data =
+      await response.json();
 
     if (!response.ok) {
-      loading.textContent = data.error || "هەڵەیەک ڕوویدا.";
+
+      loading.textContent =
+        data.error ||
+        "هەڵەیەک ڕوویدا.";
+
     } else {
 
-      loading.textContent = data.reply;
+      loading.textContent =
+        data.reply;
 
       messages.push({
         role: "assistant",
         content: data.reply
       });
 
+      speak(data.reply);
     }
 
   } catch (error) {
 
-    loading.textContent = "پەیوەندی بە AI نەکرا.";
+    loading.textContent =
+      "پەیوەندی بە AI نەکرا.";
 
   }
 
   button.disabled = false;
+
   input.focus();
 
-  chat.scrollTop = chat.scrollHeight;
+  chat.scrollTop =
+    chat.scrollHeight;
 }
 
-document.getElementById("message").addEventListener("keydown", function(event) {
+function speak(text) {
 
-  if (event.key === "Enter") {
-    sendMessage();
+  if (!("speechSynthesis" in window)) {
+    return;
   }
 
-});
+  window.speechSynthesis.cancel();
+
+  const speech =
+    new SpeechSynthesisUtterance(text);
+
+  speech.lang = "ku";
+
+  speech.rate = 0.95;
+
+  speech.pitch = 1;
+
+  window.speechSynthesis.speak(speech);
+}
+
+document
+  .getElementById("message")
+  .addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+      sendMessage();
+    }
+
+  });
 
 </script>
 
