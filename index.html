@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ku" dir="rtl">
 <head>
@@ -6,9 +7,7 @@
   <title>SamanAI</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -49,12 +48,11 @@
 
     .welcome {
       text-align: center;
-      margin-top: 25vh;
+      margin-top: 20vh;
     }
 
     .logo {
       font-size: 55px;
-      margin-bottom: 10px;
     }
 
     .welcome h1 {
@@ -102,11 +100,6 @@
       border-radius: 14px;
       outline: none;
       font-size: 16px;
-      direction: auto;
-    }
-
-    input:focus {
-      border-color: #111827;
     }
 
     button {
@@ -116,126 +109,123 @@
       background: #111827;
       color: white;
       font-size: 16px;
-      cursor: pointer;
     }
 
     button:disabled {
       opacity: .5;
-    }
-
-    @media (max-width: 600px) {
-      .app {
-        width: 100%;
-      }
-
-      header {
-        font-size: 21px;
-      }
-
-      .welcome {
-        margin-top: 20vh;
-      }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="app">
+<div class="app">
 
-    <header>
-      🤖 SamanAI
-      <small>یاریدەدەری زیرەکی تۆ</small>
-    </header>
+  <header>
+    🤖 SamanAI
+    <small>یاریدەدەری زیرەکی تۆ</small>
+  </header>
 
-    <div id="chat">
+  <div id="chat">
 
-      <div class="welcome" id="welcome">
-        <div class="logo">🤖</div>
-        <h1>بەخێربێیت بۆ SamanAI</h1>
-        <p>پرسیارێکت هەیە؟ لێرە بینووسە.</p>
-      </div>
-
-    </div>
-
-    <div class="input-area">
-      <input
-        id="message"
-        type="text"
-        placeholder="نامەکەت بنووسە..."
-        autocomplete="off"
-      >
-      <button id="send" onclick="sendMessage()">ناردن</button>
+    <div class="welcome" id="welcome">
+      <div class="logo">🤖</div>
+      <h1>بەخێربێیت بۆ SamanAI</h1>
+      <p>پرسیارێکت هەیە؟ لێرە بینووسە.</p>
     </div>
 
   </div>
 
-  <script>
-    async function sendMessage() {
-      const input = document.getElementById("message");
-      const button = document.getElementById("send");
-      const chat = document.getElementById("chat");
-      const welcome = document.getElementById("welcome");
+  <div class="input-area">
+    <input id="message" placeholder="نامەکەت بنووسە..." autocomplete="off">
+    <button id="send" onclick="sendMessage()">ناردن</button>
+  </div>
 
-      const message = input.value.trim();
+</div>
 
-      if (!message) return;
+<script>
 
-      if (welcome) {
-        welcome.remove();
-      }
+let messages = [];
 
-      const userMessage = document.createElement("div");
-      userMessage.className = "message user";
-      userMessage.textContent = message;
-      chat.appendChild(userMessage);
+async function sendMessage() {
 
-      input.value = "";
-      button.disabled = true;
+  const input = document.getElementById("message");
+  const button = document.getElementById("send");
+  const chat = document.getElementById("chat");
+  const welcome = document.getElementById("welcome");
 
-      const loading = document.createElement("div");
-      loading.className = "message ai";
-      loading.textContent = "SamanAI بیر دەکاتەوە... 🤔";
-      chat.appendChild(loading);
+  const message = input.value.trim();
 
-      chat.scrollTop = chat.scrollHeight;
+  if (!message) return;
 
-      try {
-        const response = await fetch("/api/chat", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ message })
-        });
+  if (welcome) welcome.remove();
 
-        const data = await response.json();
+  const userMessage = document.createElement("div");
+  userMessage.className = "message user";
+  userMessage.textContent = message;
+  chat.appendChild(userMessage);
 
-        if (!response.ok) {
-          loading.textContent =
-            data.error || "هەڵەیەک ڕوویدا.";
-        } else {
-          loading.textContent =
-            data.reply || "وەڵامێک نەگەڕایەوە.";
-        }
+  messages.push({
+    role: "user",
+    content: message
+  });
 
-      } catch (error) {
-        loading.textContent =
-          "پەیوەندی بە سێرڤەرەکە نەکرا.";
-      }
+  input.value = "";
+  button.disabled = true;
 
-      button.disabled = false;
-      input.focus();
+  const loading = document.createElement("div");
+  loading.className = "message ai";
+  loading.textContent = "SamanAI بیر دەکاتەوە... 🤔";
+  chat.appendChild(loading);
 
-      chat.scrollTop = chat.scrollHeight;
+  try {
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        messages: messages
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      loading.textContent = data.error || "هەڵەیەک ڕوویدا.";
+    } else {
+
+      loading.textContent = data.reply;
+
+      messages.push({
+        role: "assistant",
+        content: data.reply
+      });
+
     }
 
-    document.getElementById("message").addEventListener("keydown", function(event) {
-      if (event.key === "Enter") {
-        sendMessage();
-      }
-    });
-  </script>
+  } catch (error) {
+
+    loading.textContent = "پەیوەندی بە AI نەکرا.";
+
+  }
+
+  button.disabled = false;
+  input.focus();
+
+  chat.scrollTop = chat.scrollHeight;
+}
+
+document.getElementById("message").addEventListener("keydown", function(event) {
+
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+
+});
+
+</script>
 
 </body>
 </html>
