@@ -288,6 +288,7 @@ async function handleImage(event) {
       body: JSON.stringify({
         messages: messages,
         image: base64
+        imageType: file.type
       })
     });
 
