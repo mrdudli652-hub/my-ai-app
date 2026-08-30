@@ -3,128 +3,398 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>SamanAI</title>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #111827;
+      --user: #111827;
+      --ai: #ffffff;
+    }
+
+    body.dark {
+      --bg: #0b1120;
+      --card: #111827;
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --border: #263244;
+      --primary: #f9fafb;
+      --user: #263244;
+      --ai: #111827;
+    }
 
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      color: #171717;
+      background: var(--bg);
+      color: var(--text);
+      transition: background .25s, color .25s;
     }
 
     .app {
-      max-width: 760px;
+      width: 100%;
+      max-width: 850px;
       height: 100vh;
+      height: 100dvh;
       margin: auto;
       display: flex;
       flex-direction: column;
+      background: var(--bg);
     }
 
+    /* =========================
+       HEADER
+    ========================== */
+
     header {
-      background: #111827;
-      color: white;
-      padding: 18px;
-      text-align: center;
-      font-size: 24px;
+      padding: 14px 18px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .brand-logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 25px;
+      background: var(--primary);
+      color: var(--bg);
+      box-shadow: 0 5px 18px rgba(0,0,0,.12);
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .brand-text small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .online {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #16a34a;
+      font-size: 12px;
       font-weight: bold;
     }
 
-    header small {
-      display: block;
-      font-size: 12px;
-      opacity: .7;
-      margin-top: 4px;
+    .online-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34,197,94,.12);
     }
+
+    #themeBtn {
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
+      border-radius: 13px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 19px;
+      cursor: pointer;
+    }
+
+    /* =========================
+       CHAT
+    ========================== */
 
     #chat {
       flex: 1;
       overflow-y: auto;
-      padding: 20px 14px;
+      padding: 24px 16px 20px;
+      scroll-behavior: smooth;
+    }
+
+    #chat::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    #chat::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 20px;
     }
 
     .welcome {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      margin-top: 20vh;
+      padding: 20px;
     }
 
-    .logo {
-      font-size: 55px;
+    .welcome-logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      background: var(--primary);
+      color: var(--bg);
+      box-shadow: 0 12px 35px rgba(0,0,0,.15);
+      margin-bottom: 18px;
     }
 
-    .welcome h1 {
-      margin: 5px;
-      font-size: 30px;
+    .welcome h2 {
+      margin: 0;
+      font-size: 28px;
     }
 
     .welcome p {
-      color: #666;
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.8;
     }
 
     .message {
-      padding: 13px 15px;
-      margin: 10px 0;
-      border-radius: 16px;
-      max-width: 88%;
+      width: fit-content;
+      max-width: 86%;
+      padding: 12px 15px;
+      margin: 9px 0;
+      border-radius: 18px;
+      line-height: 1.7;
       white-space: pre-wrap;
-      line-height: 1.6;
+      word-wrap: break-word;
+      animation: messageIn .2s ease;
+    }
+
+    @keyframes messageIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .user {
-      background: #111827;
-      color: white;
       margin-right: auto;
+      background: var(--user);
+      color: white;
+      border-bottom-right-radius: 5px;
     }
 
     .ai {
-      background: white;
-      border: 1px solid #e5e7eb;
       margin-left: auto;
+      background: var(--ai);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 5px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.04);
     }
 
+    .message img {
+      display: block;
+      max-width: 280px;
+      width: 100%;
+      border-radius: 14px;
+    }
+
+    /* =========================
+       STATUS
+    ========================== */
+
+    #status {
+      min-height: 22px;
+      padding: 3px 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* =========================
+       INPUT
+    ========================== */
+
     .input-area {
-      padding: 12px;
-      background: white;
-      border-top: 1px solid #e5e7eb;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      background: var(--card);
+      border-top: 1px solid var(--border);
       display: flex;
+      align-items: center;
       gap: 8px;
     }
 
-    input {
+    .input-box {
       flex: 1;
-      padding: 14px;
-      border: 1px solid #d1d5db;
-      border-radius: 14px;
-      outline: none;
-      font-size: 16px;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      border-radius: 17px;
     }
 
-    button {
-      min-width: 48px;
-      height: 48px;
+    #message {
+      flex: 1;
+      min-width: 0;
       border: none;
-      border-radius: 14px;
-      background: #111827;
-      color: white;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      padding: 11px 8px;
+      font-size: 16px;
+      direction: rtl;
+    }
+
+    #message::placeholder {
+      color: var(--muted);
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
+      border: none;
+      border-radius: 13px;
+      background: transparent;
+      color: var(--text);
       font-size: 20px;
       cursor: pointer;
     }
 
-    button:disabled {
+    .icon-btn:hover {
+      background: var(--border);
+    }
+
+    #send {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      border: none;
+      border-radius: 15px;
+      background: var(--primary);
+      color: var(--bg);
+      font-size: 21px;
+      cursor: pointer;
+      transition: transform .15s;
+    }
+
+    #send:active {
+      transform: scale(.93);
+    }
+
+    #send:disabled {
       opacity: .5;
+      cursor: not-allowed;
     }
 
     #mic.recording {
       background: #dc2626;
+      color: white;
+      animation: pulse 1s infinite;
     }
 
-    .status {
-      text-align: center;
-      font-size: 12px;
-      color: #777;
-      padding: 4px;
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(220,38,38,.35);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(220,38,38,0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(220,38,38,0);
+      }
+    }
+
+    #imageInput {
+      display: none;
+    }
+
+    /* =========================
+       MOBILE
+    ========================== */
+
+    @media (max-width: 600px) {
+
+      header {
+        padding: 11px 12px;
+      }
+
+      .brand-logo {
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
+        font-size: 22px;
+      }
+
+      .brand-text h1 {
+        font-size: 17px;
+      }
+
+      .online {
+        display: none;
+      }
+
+      #chat {
+        padding: 18px 11px;
+      }
+
+      .welcome h2 {
+        font-size: 24px;
+      }
+
+      .welcome p {
+        font-size: 14px;
+      }
+
+      .message {
+        max-width: 91%;
+      }
+
+      .input-area {
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+
+      #send {
+        width: 45px;
+        min-width: 45px;
+        height: 45px;
+      }
     }
   </style>
 </head>
@@ -133,345 +403,65 @@
 
 <div class="app">
 
+  <!-- HEADER -->
   <header>
-    🤖 SamanAI
-    <small>یاریدەدەری زیرەکی تۆ</small>
+
+    <div class="brand">
+
+      <div class="brand-logo">
+        🤖
+      </div>
+
+      <div class="brand-text">
+        <h1>SamanAI</h1>
+        <small>یاریدەدەری زیرەکی تۆ</small>
+      </div>
+
+    </div>
+
+    <div class="online">
+      <span class="online-dot"></span>
+      Online
+    </div>
+
+    <button
+      id="themeBtn"
+      type="button"
+      onclick="toggleTheme()">
+      🌙
+    </button>
+
   </header>
 
+
+  <!-- CHAT -->
   <div id="chat">
 
     <div class="welcome" id="welcome">
-      <div class="logo">🤖</div>
-      <h1>بەخێربێیت بۆ SamanAI</h1>
-      <p>دەتوانیت بنووسیت یان قسە بکەیت 🎤</p>
+
+      <div class="welcome-logo">
+        🤖
+      </div>
+
+      <h2>بەخێربێیت بۆ SamanAI</h2>
+
+      <p>
+        من ئامادەم بۆ گفتوگۆ ❤️<br>
+        بنووسە، قسە بکە، یان وێنەیەک بنێرە.
+      </p>
+
     </div>
 
   </div>
 
-  <div class="status" id="status"></div>
 
+  <!-- STATUS -->
+  <div id="status"></div>
+
+
+  <!-- INPUT -->
   <div class="input-area">
-    <<button
-  id="imageBtn"
-  type="button"
-  onclick="document.getElementById('imageInput').click()">
-  📷
-</button>
 
-<<<input
-  id="imageInput"
-  type="file"
-  accept="image/*"
-  onchange="handleImage(event)"
->
->
->
-    <input
-      id="message"
-      placeholder="نامەکەت بنووسە..."
-      autocomplete="off"
-    >
-
-    <button id="send" onclick="sendMessage()">➤</button>
-  </div>
-
-</div>
-
-<script>
-
-let messages = [];
-
-let recognition = null;
-document.getElementById("imageInput").addEventListener("change", function(event) {
-  const file = event.target.files[0];
-
-  if (file) {
-    alert("وێنەکە هەڵبژێردرا: " + file.name);
-  } else {
-    alert("هیچ وێنەیەک هەڵنەبژێردرا");
-  }
-});
-const SpeechRecognition =
-  window.SpeechRecognition ||
-  window.webkitSpeechRecognition;
-
-if (SpeechRecognition) {
-
-  recognition = new SpeechRecognition();
-
-  recognition.lang = "ku-IQ";
-
-  recognition.continuous = false;
-
-  recognition.interimResults = false;
-
-  recognition.onstart = function() {
-    document.getElementById("mic").classList.add("recording");
-    document.getElementById("status").textContent =
-      "🎤 گوێم لێتە...";
-  };
-
-  recognition.onresult = function(event) {
-
-    let text =
-  event.results[0][0].transcript;
-
-text = text
-  .replace(/سومەر/gi, "سامان")
-  .replace(/سۆمەر/gi, "سامان")
-  .replace(/سومار/gi, "سامان")
-  .replace(/Sumer/gi, "Saman");
-
-document.getElementById("message").value = text;
-  
-
-    document.getElementById("message").value = text;
-
-    document.getElementById("status").textContent =
-      "دەقەکە ئامادەیە — تکایە پێداچوونەوەی بۆ بکە";
-
-    sendMessage();
-  };
-
-  recognition.onerror = function() {
-
-    document.getElementById("status").textContent =
-      "نەتوانرا دەنگ وەرگیرێت.";
-
-    document.getElementById("mic").classList.remove("recording");
-  };
-
-  recognition.onend = function() {
-
-    document.getElementById("mic").classList.remove("recording");
-
-  };
-
-}
-
-function startVoice() {
-
-  if (!recognition) {
-
-    alert(
-      "Browser ـەکەت Speech Recognition پشتگیری ناکات. Chrome تاقی بکەرەوە."
-    );
-
-    return;
-  }
-
-  try {
-    recognition.start();
-  } catch (error) {
-    console.log(error);
-  }
-
-}
-async function handleImage(event) {
-  const file = event.target.files[0];
-
-  if (!file) return;
-
-  const chat = document.getElementById("chat");
-
-  const imageMessage = document.createElement("div");
-  imageMessage.className = "message user";
-
-  const image = document.createElement("img");
-  image.src = URL.createObjectURL(file);
-  image.style.maxWidth = "100%";
-  image.style.borderRadius = "12px";
-
-  imageMessage.appendChild(image);
-  chat.appendChild(imageMessage);
-
-  const base64 = await fileToBase64(file);
-
-  try {
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        messages: messages,
-        image: base64,
-        imageType: file.type
-      })
-    });
-
-    const data = await response.json();
-
-    const reply = document.createElement("div");
-    reply.className = "message ai";
-    reply.textContent = data.reply || data.error || "هەڵەیەک ڕوویدا.";
-
-    chat.appendChild(reply);
-
-    if (data.reply) {
-      speak(data.reply);
-    }
-
-  } catch (error) {
-    const errorMessage = document.createElement("div");
-    errorMessage.className = "message ai";
-    errorMessage.textContent = "نەتوانرا وێنەکە بنێردرێت.";
-    chat.appendChild(errorMessage);
-  }
-
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      resolve(reader.result.split(",")[1]);
-    };
-
-    reader.onerror = reject;
-
-    reader.readAsDataURL(file);
-  });
-}
-async function sendMessage() {
-
-  const input =
-    document.getElementById("message");
-
-  const button =
-    document.getElementById("send");
-
-  const chat =
-    document.getElementById("chat");
-
-  const message =
-    input.value.trim();
-
-  if (!message) return;
-
-  const welcome =
-    document.getElementById("welcome");
-
-  if (welcome) welcome.remove();
-
-  const userMessage =
-    document.createElement("div");
-
-  userMessage.className =
-    "message user";
-
-  userMessage.textContent =
-    message;
-
-  chat.appendChild(userMessage);
-
-  messages.push({
-    role: "user",
-    content: message
-  });
-
-  input.value = "";
-
-  button.disabled = true;
-
-  const loading =
-    document.createElement("div");
-
-  loading.className =
-    "message ai";
-
-  loading.textContent =
-    "SamanAI وەڵام دەداتەوە... 🤔";
-
-  chat.appendChild(loading);
-
-  try {
-
-    const response =
-      await fetch("/api/chat", {
-
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-          messages: messages
-        })
-
-      });
-
-    const data =
-      await response.json();
-
-    if (!response.ok) {
-
-      loading.textContent =
-        data.error ||
-        "هەڵەیەک ڕوویدا.";
-
-    } else {
-
-      loading.textContent =
-        data.reply;
-
-      messages.push({
-        role: "assistant",
-        content: data.reply
-      });
-
-      speak(data.reply);
-    }
-
-  } catch (error) {
-
-    loading.textContent =
-      "پەیوەندی بە AI نەکرا.";
-
-  }
-
-  button.disabled = false;
-
-  input.focus();
-
-  chat.scrollTop =
-    chat.scrollHeight;
-}
-
-function speak(text) {
-
-  if (!("speechSynthesis" in window)) {
-    return;
-  }
-
-  window.speechSynthesis.cancel();
-
-  const speech =
-    new SpeechSynthesisUtterance(text);
-
-  speech.lang = "ku";
-
-  speech.rate = 0.95;
-
-  speech.pitch = 1;
-
-  window.speechSynthesis.speak(speech);
-}
-
-document
-  .getElementById("message")
-  .addEventListener("keydown", function(event) {
-
-    if (event.key === "Enter") {
-      sendMessage();
-    }
-
-  });
-
-</script>
-
-</body>
-</html>
+    <button
+      class="icon-btn"
+      id="image
