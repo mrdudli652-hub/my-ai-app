@@ -54,8 +54,6 @@
       transition: .25s;
     }
 
-    /* APP */
-
     .app {
       width: 100%;
       max-width: 900px;
@@ -65,8 +63,6 @@
       flex-direction: column;
       background: var(--bg);
     }
-
-    /* HEADER */
 
     header {
       flex-shrink: 0;
@@ -150,8 +146,6 @@
       font-size: 19px;
     }
 
-    /* CHAT */
-
     #chat {
       flex: 1;
       min-height: 0;
@@ -171,8 +165,6 @@
       background: var(--border);
       border-radius: 20px;
     }
-
-    /* WELCOME */
 
     .welcome {
       height: 100%;
@@ -223,8 +215,6 @@
       font-size: 14px;
       line-height: 1.8;
     }
-
-    /* MESSAGES */
 
     .message {
       width: fit-content;
@@ -289,8 +279,6 @@
       border-radius: 14px;
     }
 
-    /* STATUS */
-
     #status {
       flex-shrink: 0;
 
@@ -304,8 +292,6 @@
 
       padding: 3px;
     }
-
-    /* INPUT AREA */
 
     .input-area {
       flex-shrink: 0;
@@ -443,8 +429,6 @@
       display: none;
     }
 
-    /* MOBILE */
-
     @media (max-width: 600px) {
 
       header {
@@ -519,8 +503,6 @@
 
 <div class="app">
 
-  <!-- HEADER -->
-
   <header>
 
     <div class="brand">
@@ -557,9 +539,6 @@
 
   </header>
 
-
-  <!-- CHAT -->
-
   <div id="chat">
 
     <div
@@ -584,13 +563,7 @@
 
   </div>
 
-
-  <!-- STATUS -->
-
   <div id="status"></div>
-
-
-  <!-- INPUT -->
 
   <div class="input-area">
 
@@ -606,7 +579,6 @@
       id="imageInput"
       type="file"
       accept="image/*">
-
 
     <div class="input-box">
 
@@ -626,7 +598,6 @@
 
     </div>
 
-
     <button
       id="send"
       type="button"
@@ -638,12 +609,53 @@
 
 </div>
 
-
 <script>
 
 let messages = [];
-
 let recognition = null;
+
+
+/* =========================
+   USER ID
+========================= */
+
+function getUserId() {
+
+  let userId =
+    localStorage.getItem("samanai-user-id");
+
+  if (!userId) {
+
+    if (
+      window.crypto &&
+      typeof window.crypto.randomUUID === "function"
+    ) {
+
+      userId =
+        window.crypto.randomUUID();
+
+    } else {
+
+      userId =
+        "user-" +
+        Date.now() +
+        "-" +
+        Math.random()
+          .toString(36)
+          .slice(2);
+
+    }
+
+    localStorage.setItem(
+      "samanai-user-id",
+      userId
+    );
+  }
+
+  return userId;
+}
+
+const userId = getUserId();
 
 
 /* =========================
@@ -727,24 +739,20 @@ if (SpeechRecognition) {
     let text =
       event.results[0][0].transcript;
 
-
     text = text
       .replace(/سومەر/gi, "سامان")
       .replace(/سۆمەر/gi, "سامان")
       .replace(/سومار/gi, "سامان")
       .replace(/Sumer/gi, "Saman");
 
-
     document
       .getElementById("message")
       .value = text;
-
 
     document
       .getElementById("status")
       .textContent =
       "دەنگەکە وەرگیرا 🎤";
-
 
     sendMessage();
 
@@ -784,7 +792,6 @@ function startVoice() {
 
   }
 
-
   try {
 
     recognition.start();
@@ -817,10 +824,8 @@ async function handleImage(event) {
 
   if (!file) return;
 
-
   const chat =
     document.getElementById("chat");
-
 
   const welcome =
     document.getElementById("welcome");
@@ -829,13 +834,11 @@ async function handleImage(event) {
     welcome.remove();
   }
 
-
   const imageMessage =
     document.createElement("div");
 
   imageMessage.className =
     "message user";
-
 
   const image =
     document.createElement("img");
@@ -843,19 +846,15 @@ async function handleImage(event) {
   image.src =
     URL.createObjectURL(file);
 
-
   imageMessage.appendChild(image);
 
   chat.appendChild(imageMessage);
 
-
   chat.scrollTop =
     chat.scrollHeight;
 
-
   const base64 =
     await fileToBase64(file);
-
 
   try {
 
@@ -874,16 +873,16 @@ async function handleImage(event) {
 
           image: base64,
 
-          imageType: file.type
+          imageType: file.type,
+
+          userId: userId
 
         })
 
       });
 
-
     const data =
       await response.json();
-
 
     const reply =
       document.createElement("div");
@@ -891,20 +890,16 @@ async function handleImage(event) {
     reply.className =
       "message ai";
 
-
     reply.textContent =
       data.reply ||
       data.error ||
       "هەڵەیەک ڕوویدا.";
 
-
     chat.appendChild(reply);
-
 
     if (data.reply) {
       speak(data.reply);
     }
-
 
   } catch (error) {
 
@@ -921,10 +916,8 @@ async function handleImage(event) {
 
   }
 
-
   chat.scrollTop =
     chat.scrollHeight;
-
 
   event.target.value = "";
 
@@ -939,7 +932,6 @@ function fileToBase64(file) {
       const reader =
         new FileReader();
 
-
       reader.onload = function() {
 
         resolve(
@@ -948,10 +940,8 @@ function fileToBase64(file) {
 
       };
 
-
       reader.onerror =
         reject;
-
 
       reader.readAsDataURL(file);
 
@@ -976,13 +966,10 @@ async function sendMessage() {
   const chat =
     document.getElementById("chat");
 
-
   const message =
     input.value.trim();
 
-
   if (!message) return;
-
 
   const welcome =
     document.getElementById("welcome");
@@ -990,7 +977,6 @@ async function sendMessage() {
   if (welcome) {
     welcome.remove();
   }
-
 
   const userMessage =
     document.createElement("div");
@@ -1001,9 +987,7 @@ async function sendMessage() {
   userMessage.textContent =
     message;
 
-
   chat.appendChild(userMessage);
-
 
   messages.push({
 
@@ -1013,11 +997,9 @@ async function sendMessage() {
 
   });
 
-
   input.value = "";
 
   button.disabled = true;
-
 
   const loading =
     document.createElement("div");
@@ -1028,13 +1010,10 @@ async function sendMessage() {
   loading.textContent =
     "SamanAI دەفکەرێت... 🤔";
 
-
   chat.appendChild(loading);
-
 
   chat.scrollTop =
     chat.scrollHeight;
-
 
   try {
 
@@ -1052,16 +1031,16 @@ async function sendMessage() {
 
         body: JSON.stringify({
 
-          messages: messages
+          messages: messages,
+
+          userId: userId
 
         })
 
       });
 
-
     const data =
       await response.json();
-
 
     if (!response.ok) {
 
@@ -1074,7 +1053,6 @@ async function sendMessage() {
       loading.textContent =
         data.reply;
 
-
       messages.push({
 
         role: "assistant",
@@ -1083,11 +1061,9 @@ async function sendMessage() {
 
       });
 
-
       speak(data.reply);
 
     }
-
 
   } catch (error) {
 
@@ -1096,11 +1072,9 @@ async function sendMessage() {
 
   }
 
-
   button.disabled = false;
 
   input.focus();
-
 
   chat.scrollTop =
     chat.scrollHeight;
@@ -1118,20 +1092,16 @@ function speak(text) {
     return;
   }
 
-
   window.speechSynthesis.cancel();
-
 
   const speech =
     new SpeechSynthesisUtterance(text);
-
 
   speech.lang = "ku";
 
   speech.rate = 0.95;
 
   speech.pitch = 1;
-
 
   window.speechSynthesis.speak(
     speech
