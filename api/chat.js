@@ -13,11 +13,10 @@ export default async function handler(req, res) {
     }
 
     const sql = neon(process.env.DATABASE_URL);
-
     const userId = "samanai-user";
 
     // =====================================================
-    // 1. دڵنیابوون لە بوونی Memory table
+    // 1. دڵنیابوون لە بوونی خشتەی Memory
     // =====================================================
 
     await sql`
@@ -30,7 +29,94 @@ export default async function handler(req, res) {
     `;
 
     // =====================================================
-    // 2. خوێندنەوەی Memory ـەکانی پێشوو
+    // 2. دوا نامەی بەکارهێنەر
+    // =====================================================
+
+    const lastMessage =
+      messages[messages.length - 1]?.content || "";
+
+    const cleanMessage = String(lastMessage).trim();
+
+    // =====================================================
+    // 3. دۆزینەوەی ناوی بەکارهێنەر
+    // =====================================================
+
+    let detectedName = null;
+
+    const nameMatch = cleanMessage.match(
+      /(?:ناوم|ناوی من)\s+(?:ـ)?([^\s،,.!؟]+)/
+    );
+
+    if (nameMatch) {
+      detectedName = nameMatch[1]
+        .replace(/[،,.!؟]+$/g, "")
+        .replace(/^(?:ـ)/, "");
+
+      // لابردنی "ە" ـی کۆتایی لە "سامانە"
+      if (detectedName.endsWith("ە")) {
+        detectedName = detectedName.slice(0, -1);
+      }
+    }
+
+    // =====================================================
+    // 4. پشکنینی داواکاریی Memory
+    // =====================================================
+
+    const memoryRequest =
+      /لەبیرت بێت|لەبیرم بکە|بیرت بێت|لەبیرت نەچێت|تۆمار بکە|پاشەکەوتی بکە/i.test(
+        cleanMessage
+      );
+
+    // =====================================================
+    // 5. هەڵگرتنی ناو بە شێوەی تایبەت
+    // =====================================================
+
+    if (detectedName) {
+      const nameMemory = `ناوی بەکارهێنەر: ${detectedName}`;
+
+      const existingName = await sql`
+        SELECT id
+        FROM public.memories
+        WHERE user_id = ${userId}
+          AND memory = ${nameMemory}
+        LIMIT 1
+      `;
+
+      if (existingName.length === 0) {
+        await sql`
+          INSERT INTO public.memories (user_id, memory)
+          VALUES (${userId}, ${nameMemory})
+        `;
+      }
+    }
+
+    // =====================================================
+    // 6. هەڵگرتنی Memory ـی داواکراو
+    // =====================================================
+
+    if (
+      memoryRequest &&
+      cleanMessage &&
+      !detectedName
+    ) {
+      const existingMemory = await sql`
+        SELECT id
+        FROM public.memories
+        WHERE user_id = ${userId}
+          AND memory = ${cleanMessage}
+        LIMIT 1
+      `;
+
+      if (existingMemory.length === 0) {
+        await sql`
+          INSERT INTO public.memories (user_id, memory)
+          VALUES (${userId}, ${cleanMessage})
+        `;
+      }
+    }
+
+    // =====================================================
+    // 7. خوێندنەوەی هەموو Memory ـەکان
     // =====================================================
 
     const memoryRows = await sql`
@@ -45,31 +131,47 @@ export default async function handler(req, res) {
       .join("\n");
 
     const memoryText = memories
-      ? `Memory ـەکانی بەکارهێنەر:\n${memories}`
-      : "هیچ Memory ـێک هێشتا نییە.";
+      ? memories
+      : "هیچ Memory ـێک هێشتا تۆمار نەکراوە.";
 
     // =====================================================
-    // 3. ناردنی Memory + گفتوگۆ بۆ Gemini
+    // 8. ڕێنمایی تایبەت بۆ SamanAI
     // =====================================================
 
-    const contents = [
-      {
-        role: "user",
-        parts: [
-          {
-            text:
-              `تۆ SamanAI ـیت، یاریدەدەری زیرەکی بەکارهێنەر. ` +
-              `Memory ـەکانی خوارەوە زانیارییە پێشوون. ` +
-              `کاتێک پەیوەندیدار بوون، بە شێوەی سروشتی بەکاریان بهێنە.\n\n` +
-              memoryText
-          }
-        ]
-      },
-      ...messages.map((m) => ({
-        role: m.role === "assistant" ? "model" : "user",
-        parts: [{ text: String(m.content || "") }]
-      }))
-    ];
+    const systemInstruction = {
+      parts: [
+        {
+          text:
+            `تۆ SamanAI ـیت، یاریدەدەری زیرەکی بەکارهێنەر.
+
+ئەمە Memory ـە ڕاستەقینەکانی بەکارهێنەرن:
+${memoryText}
+
+ڕێساکانی Memory:
+1. ئەگەر لە Memory ـدا ناوی بەکارهێنەر هەیە، بە هەمان ناو بانگی بکە.
+2. ئەگەر ناوی بەکارهێنەر لە Memory ـدا هەیە، هەرگیز مەڵێ "ناوت نازانم" یان "هیچ زانیارییەک نییە".
+3. Memory ـەکان بە ڕاستی وەک زانیاریی پێشووی بەکارهێنەر مامەڵەیان لەگەڵ بکە.
+4. هیچ Memory ـێک مەگۆڕە یان مەسڕەوە، مەگەر بەکارهێنەر بە ڕوونی داوای سڕینەوە بکات.
+5. ئەگەر Memory پەیوەندیدار بە پرسیارەکەی بەکارهێنەر هەیە، بە شێوەی سروشتی بەکاری بهێنە.
+6. ئەگەر Memory پەیوەندیدار نییە، پێویست نییە باسی بکەیت.
+
+وەڵامەکانت بە کوردیی سۆرانی و سروشتی بن.`
+        }
+      ]
+    };
+
+    // =====================================================
+    // 9. ناردنی گفتوگۆ + Memory بۆ Gemini
+    // =====================================================
+
+    const contents = messages.map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [
+        {
+          text: String(m.content || "")
+        }
+      ]
+    }));
 
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=" +
@@ -80,6 +182,7 @@ export default async function handler(req, res) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
+          systemInstruction,
           contents
         })
       }
@@ -87,42 +190,29 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
+    // =====================================================
+    // 10. پشکنینی هەڵەی Gemini
+    // =====================================================
+
     if (!response.ok) {
       console.error("GEMINI ERROR:", data);
 
       return res.status(response.status).json({
-        error: data.error?.message || "Gemini API error"
+        error:
+          data.error?.message ||
+          "Gemini API error"
       });
     }
+
+    // =====================================================
+    // 11. وەرگرتنی وەڵامی AI
+    // =====================================================
 
     const reply =
       data.candidates?.[0]?.content?.parts
         ?.map((part) => part.text || "")
         .join("") ||
       "No response received.";
-
-    // =====================================================
-    // 4. پشکنینی داوای Memory
-    // =====================================================
-
-    const lastMessage =
-      messages[messages.length - 1]?.content || "";
-
-    const memoryRequest =
-      /لەبیرت بێت|لەبیرم بکە|بیرت بێت|لەبیرت نەچێت/i.test(
-        lastMessage
-      );
-
-    // =====================================================
-    // 5. هەڵگرتنی Memory
-    // =====================================================
-
-    if (memoryRequest && lastMessage.trim()) {
-      await sql`
-        INSERT INTO public.memories (user_id, memory)
-        VALUES (${userId}, ${lastMessage.trim()})
-      `;
-    }
 
     return res.status(200).json({
       reply
