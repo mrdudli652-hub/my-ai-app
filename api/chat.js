@@ -2,7 +2,7 @@ import { neon } from "@neondatabase/serverless";
 
 export default async function handler(req, res) {
   try {
-    const { messages = [] } = req.body || {};
+    const { messages = [], userId: incomingUserId } = req.body || {};
 
     if (!process.env.DATABASE_URL) {
       throw new Error("DATABASE_URL is missing");
@@ -13,10 +13,21 @@ export default async function handler(req, res) {
     }
 
     const sql = neon(process.env.DATABASE_URL);
-    const userId = "samanai-user";
 
     // =====================================================
-    // 1. دڵنیابوون لە بوونی خشتەی Memory
+    // 1. ناسینەوەی بەکارهێنەر
+    // =====================================================
+
+    const userId = String(incomingUserId || "").trim();
+
+    if (!userId) {
+      return res.status(400).json({
+        error: "User ID is missing"
+      });
+    }
+
+    // =====================================================
+    // 2. دڵنیابوون لە بوونی خشتەی Memory
     // =====================================================
 
     await sql`
@@ -29,16 +40,17 @@ export default async function handler(req, res) {
     `;
 
     // =====================================================
-    // 2. دوا نامەی بەکارهێنەر
+    // 3. دوا نامەی بەکارهێنەر
     // =====================================================
 
     const lastMessage =
       messages[messages.length - 1]?.content || "";
 
-    const cleanMessage = String(lastMessage).trim();
+    const cleanMessage =
+      String(lastMessage).trim();
 
     // =====================================================
-    // 3. دۆزینەوەی ناوی بەکارهێنەر
+    // 4. دۆزینەوەی ناوی بەکارهێنەر
     // =====================================================
 
     let detectedName = null;
@@ -52,14 +64,14 @@ export default async function handler(req, res) {
         .replace(/[،,.!؟]+$/g, "")
         .replace(/^(?:ـ)/, "");
 
-      // لابردنی "ە" ـی کۆتایی لە "سامانە"
       if (detectedName.endsWith("ە")) {
-        detectedName = detectedName.slice(0, -1);
+        detectedName =
+          detectedName.slice(0, -1);
       }
     }
 
     // =====================================================
-    // 4. پشکنینی داواکاریی Memory
+    // 5. پشکنینی داواکاریی Memory
     // =====================================================
 
     const memoryRequest =
@@ -68,11 +80,12 @@ export default async function handler(req, res) {
       );
 
     // =====================================================
-    // 5. هەڵگرتنی ناو بە شێوەی تایبەت
+    // 6. هەڵگرتنی ناوی بەکارهێنەر
     // =====================================================
 
     if (detectedName) {
-      const nameMemory = `ناوی بەکارهێنەر: ${detectedName}`;
+      const nameMemory =
+        `ناوی بەکارهێنەر: ${detectedName}`;
 
       const existingName = await sql`
         SELECT id
@@ -84,14 +97,16 @@ export default async function handler(req, res) {
 
       if (existingName.length === 0) {
         await sql`
-          INSERT INTO public.memories (user_id, memory)
-          VALUES (${userId}, ${nameMemory})
+          INSERT INTO public.memories
+            (user_id, memory)
+          VALUES
+            (${userId}, ${nameMemory})
         `;
       }
     }
 
     // =====================================================
-    // 6. هەڵگرتنی Memory ـی داواکراو
+    // 7. هەڵگرتنی Memory ـی داواکراو
     // =====================================================
 
     if (
@@ -109,14 +124,16 @@ export default async function handler(req, res) {
 
       if (existingMemory.length === 0) {
         await sql`
-          INSERT INTO public.memories (user_id, memory)
-          VALUES (${userId}, ${cleanMessage})
+          INSERT INTO public.memories
+            (user_id, memory)
+          VALUES
+            (${userId}, ${cleanMessage})
         `;
       }
     }
 
     // =====================================================
-    // 7. خوێندنەوەی هەموو Memory ـەکان
+    // 8. خوێندنەوەی Memory ـەکانی تەنها ئەم بەکارهێنەرە
     // =====================================================
 
     const memoryRows = await sql`
@@ -126,16 +143,17 @@ export default async function handler(req, res) {
       ORDER BY created_at ASC
     `;
 
-    const memories = memoryRows
-      .map((row) => row.memory)
-      .join("\n");
+    const memories =
+      memoryRows
+        .map((row) => row.memory)
+        .join("\n");
 
-    const memoryText = memories
-      ? memories
-      : "هیچ Memory ـێک هێشتا تۆمار نەکراوە.";
+    const memoryText =
+      memories ||
+      "هیچ Memory ـێک هێشتا تۆمار نەکراوە.";
 
     // =====================================================
-    // 8. ڕێنمایی تایبەت بۆ SamanAI
+    // 9. ڕێنمایی تایبەت بۆ SamanAI
     // =====================================================
 
     const systemInstruction = {
@@ -144,28 +162,39 @@ export default async function handler(req, res) {
           text:
             `تۆ SamanAI ـیت، یاریدەدەری زیرەکی بەکارهێنەر.
 
-ئەمە Memory ـە ڕاستەقینەکانی بەکارهێنەرن:
+ئەمە تەنها Memory ـەکانی ئەم بەکارهێنەرەن:
 ${memoryText}
 
 ڕێساکانی Memory:
-1. ئەگەر لە Memory ـدا ناوی بەکارهێنەر هەیە، بە هەمان ناو بانگی بکە.
-2. ئەگەر ناوی بەکارهێنەر لە Memory ـدا هەیە، هەرگیز مەڵێ "ناوت نازانم" یان "هیچ زانیارییەک نییە".
-3. Memory ـەکان بە ڕاستی وەک زانیاریی پێشووی بەکارهێنەر مامەڵەیان لەگەڵ بکە.
-4. هیچ Memory ـێک مەگۆڕە یان مەسڕەوە، مەگەر بەکارهێنەر بە ڕوونی داوای سڕینەوە بکات.
-5. ئەگەر Memory پەیوەندیدار بە پرسیارەکەی بەکارهێنەر هەیە، بە شێوەی سروشتی بەکاری بهێنە.
-6. ئەگەر Memory پەیوەندیدار نییە، پێویست نییە باسی بکەیت.
 
-وەڵامەکانت بە کوردیی سۆرانی و سروشتی بن.`
+1. ئەگەر لە Memory ـدا ناوی بەکارهێنەر هەیە، بە هەمان ناو بانگی بکە.
+
+2. ئەگەر ناوی بەکارهێنەر لە Memory ـدا هەیە، هەرگیز مەڵێ "ناوت نازانم" یان "هیچ زانیارییەک نییە".
+
+3. Memory ـەکان بە ڕاستی وەک زانیاریی پێشووی ئەم بەکارهێنەرە مامەڵەیان لەگەڵ بکە.
+
+4. هیچ Memory ـێک مەگۆڕە یان مەسڕەوە، مەگەر بەکارهێنەر بە ڕوونی داوای سڕینەوە بکات.
+
+5. ئەگەر Memory پەیوەندیدار بە پرسیارەکەی بەکارهێنەر هەیە، بە شێوەی سروشتی بەکاری بهێنە.
+
+6. Memory ـی هیچ بەکارهێنەرێکی تر مەزانە و مەخەیتە ناو وەڵامەکەت.
+
+7. ئەگەر Memory پەیوەندیدار نییە، پێویست نییە باسی بکەیت.
+
+8. وەڵامەکانت بە کوردیی سۆرانی و سروشتی بن.`
         }
       ]
     };
 
     // =====================================================
-    // 9. ناردنی گفتوگۆ + Memory بۆ Gemini
+    // 10. ناردنی گفتوگۆ + Memory بۆ Gemini
     // =====================================================
 
     const contents = messages.map((m) => ({
-      role: m.role === "assistant" ? "model" : "user",
+      role:
+        m.role === "assistant"
+          ? "model"
+          : "user",
       parts: [
         {
           text: String(m.content || "")
@@ -173,14 +202,21 @@ ${memoryText}
       ]
     }));
 
+    // =====================================================
+    // 11. ناردن بۆ Gemini
+    // =====================================================
+
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=" +
         process.env.GEMINI_API_KEY,
       {
         method: "POST",
+
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type":
+            "application/json"
         },
+
         body: JSON.stringify({
           systemInstruction,
           contents
@@ -188,16 +224,22 @@ ${memoryText}
       }
     );
 
-    const data = await response.json();
+    const data =
+      await response.json();
 
     // =====================================================
-    // 10. پشکنینی هەڵەی Gemini
+    // 12. پشکنینی هەڵەی Gemini
     // =====================================================
 
     if (!response.ok) {
-      console.error("GEMINI ERROR:", data);
+      console.error(
+        "GEMINI ERROR:",
+        data
+      );
 
-      return res.status(response.status).json({
+      return res.status(
+        response.status
+      ).json({
         error:
           data.error?.message ||
           "Gemini API error"
@@ -205,12 +247,15 @@ ${memoryText}
     }
 
     // =====================================================
-    // 11. وەرگرتنی وەڵامی AI
+    // 13. وەرگرتنی وەڵامی AI
     // =====================================================
 
     const reply =
       data.candidates?.[0]?.content?.parts
-        ?.map((part) => part.text || "")
+        ?.map(
+          (part) =>
+            part.text || ""
+        )
         .join("") ||
       "No response received.";
 
@@ -219,10 +264,15 @@ ${memoryText}
     });
 
   } catch (error) {
-    console.error("SERVER ERROR:", error);
+    console.error(
+      "SERVER ERROR:",
+      error
+    );
 
     return res.status(500).json({
-      error: error.message || "Server error"
+      error:
+        error.message ||
+        "Server error"
     });
   }
 }
