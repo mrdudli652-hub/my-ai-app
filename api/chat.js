@@ -20,11 +20,9 @@ export default async function handler(req, res) {
 
     const userId = String(incomingUserId || "").trim();
 
-    if (!userId) {
-      return res.status(400).json({
-        error: "User ID is missing"
-      });
-    }
+    const userId = String(
+  incomingUserId || "samanai-user"
+).trim();
 
     // =====================================================
     // 2. دڵنیابوون لە بوونی خشتەی Memory
