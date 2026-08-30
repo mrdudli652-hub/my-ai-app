@@ -1,50 +1,64 @@
 <!DOCTYPE html>
 <html lang="ku" dir="rtl">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
   <title>SamanAI</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
 
     :root {
-      --bg: #f4f6fb;
+      --bg: #f5f7fb;
       --card: #ffffff;
       --text: #111827;
-      --muted: #6b7280;
+      --muted: #737b8c;
       --border: #e5e7eb;
-      --primary: #111827;
-      --user: #111827;
-      --ai: #ffffff;
+      --bubble-ai: #ffffff;
+      --bubble-user: #111827;
+      --button: #111827;
+      --button-text: #ffffff;
     }
 
     body.dark {
-      --bg: #0b1120;
-      --card: #111827;
-      --text: #f9fafb;
+      --bg: #080d18;
+      --card: #101827;
+      --text: #f8fafc;
       --muted: #9ca3af;
       --border: #263244;
-      --primary: #f9fafb;
-      --user: #263244;
-      --ai: #111827;
+      --bubble-ai: #111827;
+      --bubble-user: #273449;
+      --button: #f8fafc;
+      --button-text: #111827;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
     }
 
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background: var(--bg);
       color: var(--text);
-      transition: background .25s, color .25s;
+      transition: .25s;
     }
+
+    /* APP */
 
     .app {
       width: 100%;
-      max-width: 850px;
-      height: 100vh;
+      max-width: 900px;
       height: 100dvh;
       margin: auto;
       display: flex;
@@ -52,37 +66,41 @@
       background: var(--bg);
     }
 
-    /* =========================
-       HEADER
-    ========================== */
+    /* HEADER */
 
     header {
-      padding: 14px 18px;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      height: 72px;
+      padding: 10px 14px;
+
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 11px;
+      gap: 10px;
     }
 
-    .brand-logo {
-      width: 46px;
-      height: 46px;
-      border-radius: 15px;
+    .logo {
+      width: 48px;
+      height: 48px;
+
+      border-radius: 16px;
+
       display: flex;
       align-items: center;
       justify-content: center;
+
+      background: #111827;
       font-size: 25px;
-      background: var(--primary);
-      color: var(--bg);
-      box-shadow: 0 5px 18px rgba(0,0,0,.12);
+
+      box-shadow: 0 7px 22px rgba(0,0,0,.12);
     }
 
     .brand-text h1 {
@@ -90,55 +108,63 @@
       font-size: 19px;
     }
 
-    .brand-text small {
-      display: block;
-      margin-top: 3px;
+    .brand-text p {
+      margin: 3px 0 0;
       color: var(--muted);
-      font-size: 12px;
+      font-size: 11px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .online {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
+
       color: #16a34a;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: bold;
     }
 
-    .online-dot {
+    .dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
       background: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34,197,94,.12);
     }
 
     #themeBtn {
       width: 42px;
       height: 42px;
-      min-width: 42px;
+
       border-radius: 13px;
       border: 1px solid var(--border);
-      background: var(--card);
+
+      background: var(--bg);
       color: var(--text);
+
       font-size: 19px;
-      cursor: pointer;
     }
 
-    /* =========================
-       CHAT
-    ========================== */
+    /* CHAT */
 
     #chat {
       flex: 1;
+      min-height: 0;
+
       overflow-y: auto;
-      padding: 24px 16px 20px;
+
+      padding: 20px 14px;
+
       scroll-behavior: smooth;
     }
 
     #chat::-webkit-scrollbar {
-      width: 5px;
+      width: 4px;
     }
 
     #chat::-webkit-scrollbar-thumb {
@@ -146,135 +172,193 @@
       border-radius: 20px;
     }
 
+    /* WELCOME */
+
     .welcome {
-      min-height: 60vh;
+      height: 100%;
+      min-height: 0;
+
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+
       text-align: center;
+
       padding: 20px;
     }
 
     .welcome-logo {
-      width: 90px;
-      height: 90px;
-      border-radius: 28px;
+      width: 100px;
+      height: 100px;
+
+      border-radius: 30px;
+
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 48px;
-      background: var(--primary);
-      color: var(--bg);
-      box-shadow: 0 12px 35px rgba(0,0,0,.15);
-      margin-bottom: 18px;
+
+      background: #111827;
+
+      font-size: 52px;
+
+      box-shadow:
+        0 15px 40px rgba(0,0,0,.16);
+
+      margin-bottom: 20px;
     }
 
     .welcome h2 {
       margin: 0;
-      font-size: 28px;
+
+      font-size: 27px;
+      color: var(--text);
     }
 
     .welcome p {
-      margin: 10px 0 0;
+      margin-top: 10px;
+
       color: var(--muted);
-      font-size: 15px;
+
+      font-size: 14px;
       line-height: 1.8;
     }
 
+    /* MESSAGES */
+
     .message {
       width: fit-content;
-      max-width: 86%;
+      max-width: 88%;
+
       padding: 12px 15px;
-      margin: 9px 0;
+
+      margin: 8px 0;
+
       border-radius: 18px;
+
       line-height: 1.7;
+
       white-space: pre-wrap;
-      word-wrap: break-word;
-      animation: messageIn .2s ease;
+      word-break: break-word;
+
+      animation: appear .2s ease;
     }
 
-    @keyframes messageIn {
+    @keyframes appear {
+
       from {
         opacity: 0;
-        transform: translateY(6px);
+        transform: translateY(7px);
       }
 
       to {
         opacity: 1;
         transform: translateY(0);
       }
+
     }
 
     .user {
       margin-right: auto;
-      background: var(--user);
+
+      background: var(--bubble-user);
       color: white;
+
       border-bottom-right-radius: 5px;
     }
 
     .ai {
       margin-left: auto;
-      background: var(--ai);
+
+      background: var(--bubble-ai);
       color: var(--text);
+
       border: 1px solid var(--border);
+
       border-bottom-left-radius: 5px;
+
       box-shadow: 0 3px 12px rgba(0,0,0,.04);
     }
 
     .message img {
       display: block;
+
       max-width: 280px;
       width: 100%;
+
       border-radius: 14px;
     }
 
-    /* =========================
-       STATUS
-    ========================== */
+    /* STATUS */
 
     #status {
+      flex-shrink: 0;
+
       min-height: 22px;
-      padding: 3px 12px;
+
       text-align: center;
+
       color: var(--muted);
-      font-size: 12px;
+
+      font-size: 11px;
+
+      padding: 3px;
     }
 
-    /* =========================
-       INPUT
-    ========================== */
+    /* INPUT AREA */
 
     .input-area {
-      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
-      background: var(--card);
-      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+
+      padding: 9px 10px;
+
+      padding-bottom:
+        calc(9px + env(safe-area-inset-bottom));
+
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
+
+      background: var(--card);
+
+      border-top: 1px solid var(--border);
     }
 
     .input-box {
       flex: 1;
+
       min-width: 0;
+
+      height: 50px;
+
       display: flex;
       align-items: center;
-      gap: 7px;
-      padding: 5px;
-      border: 1px solid var(--border);
+
       background: var(--bg);
+
+      border: 1px solid var(--border);
+
       border-radius: 17px;
+
+      padding: 3px 5px;
     }
 
     #message {
       flex: 1;
+
       min-width: 0;
+
       border: none;
       outline: none;
+
       background: transparent;
+
       color: var(--text);
-      padding: 11px 8px;
+
       font-size: 16px;
+
+      padding: 10px;
+
       direction: rtl;
     }
 
@@ -283,15 +367,26 @@
     }
 
     .icon-btn {
-      width: 42px;
-      height: 42px;
-      min-width: 42px;
+      width: 43px;
+      height: 43px;
+
+      min-width: 43px;
+
       border: none;
+
       border-radius: 13px;
+
       background: transparent;
+
       color: var(--text);
+
       font-size: 20px;
+
       cursor: pointer;
+    }
+
+    .icon-btn:active {
+      transform: scale(.92);
     }
 
     .icon-btn:hover {
@@ -299,36 +394,39 @@
     }
 
     #send {
-      width: 48px;
-      height: 48px;
-      min-width: 48px;
-      border: none;
-      border-radius: 15px;
-      background: var(--primary);
-      color: var(--bg);
-      font-size: 21px;
-      cursor: pointer;
-      transition: transform .15s;
-    }
+      width: 50px;
+      height: 50px;
 
-    #send:active {
-      transform: scale(.93);
+      min-width: 50px;
+
+      border: none;
+
+      border-radius: 16px;
+
+      background: var(--button);
+
+      color: var(--button-text);
+
+      font-size: 21px;
+
+      cursor: pointer;
     }
 
     #send:disabled {
-      opacity: .5;
-      cursor: not-allowed;
+      opacity: .45;
     }
 
     #mic.recording {
       background: #dc2626;
       color: white;
+
       animation: pulse 1s infinite;
     }
 
     @keyframes pulse {
+
       0% {
-        box-shadow: 0 0 0 0 rgba(220,38,38,.35);
+        box-shadow: 0 0 0 0 rgba(220,38,38,.4);
       }
 
       70% {
@@ -338,27 +436,27 @@
       100% {
         box-shadow: 0 0 0 0 rgba(220,38,38,0);
       }
+
     }
 
     #imageInput {
       display: none;
     }
 
-    /* =========================
-       MOBILE
-    ========================== */
+    /* MOBILE */
 
     @media (max-width: 600px) {
 
       header {
-        padding: 11px 12px;
+        height: 66px;
+        padding: 8px 10px;
       }
 
-      .brand-logo {
-        width: 42px;
-        height: 42px;
-        border-radius: 13px;
-        font-size: 22px;
+      .logo {
+        width: 44px;
+        height: 44px;
+
+        border-radius: 14px;
       }
 
       .brand-text h1 {
@@ -370,32 +468,50 @@
       }
 
       #chat {
-        padding: 18px 11px;
+        padding: 15px 10px;
+      }
+
+      .welcome-logo {
+        width: 88px;
+        height: 88px;
+
+        border-radius: 27px;
+
+        font-size: 46px;
       }
 
       .welcome h2 {
-        font-size: 24px;
-      }
-
-      .welcome p {
-        font-size: 14px;
+        font-size: 23px;
       }
 
       .message {
-        max-width: 91%;
+        max-width: 92%;
       }
 
       .input-area {
-        padding-left: 8px;
-        padding-right: 8px;
+        gap: 5px;
+        padding-left: 7px;
+        padding-right: 7px;
+      }
+
+      .input-box {
+        height: 48px;
+      }
+
+      .icon-btn {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
       }
 
       #send {
-        width: 45px;
-        min-width: 45px;
-        height: 45px;
+        width: 47px;
+        height: 47px;
+        min-width: 47px;
       }
+
     }
+
   </style>
 </head>
 
@@ -404,49 +520,63 @@
 <div class="app">
 
   <!-- HEADER -->
+
   <header>
 
     <div class="brand">
 
-      <div class="brand-logo">
+      <div class="logo">
         🤖
       </div>
 
       <div class="brand-text">
+
         <h1>SamanAI</h1>
-        <small>یاریدەدەری زیرەکی تۆ</small>
+
+        <p>یاریدەدەری زیرەکی تۆ</p>
+
       </div>
 
     </div>
 
-    <div class="online">
-      <span class="online-dot"></span>
-      Online
-    </div>
+    <div class="header-right">
 
-    <button
-      id="themeBtn"
-      type="button"
-      onclick="toggleTheme()">
-      🌙
-    </button>
+      <div class="online">
+        <span class="dot"></span>
+        Online
+      </div>
+
+      <button
+        id="themeBtn"
+        type="button"
+        onclick="toggleTheme()">
+        🌙
+      </button>
+
+    </div>
 
   </header>
 
 
   <!-- CHAT -->
+
   <div id="chat">
 
-    <div class="welcome" id="welcome">
+    <div
+      class="welcome"
+      id="welcome">
 
       <div class="welcome-logo">
         🤖
       </div>
 
-      <h2>بەخێربێیت بۆ SamanAI</h2>
+      <h2>
+        بەخێربێیت بۆ SamanAI
+      </h2>
 
       <p>
-        من ئامادەم بۆ گفتوگۆ ❤️<br>
+        من ئامادەم بۆ گفتوگۆ ❤️
+        <br>
         بنووسە، قسە بکە، یان وێنەیەک بنێرە.
       </p>
 
@@ -456,12 +586,582 @@
 
 
   <!-- STATUS -->
+
   <div id="status"></div>
 
 
   <!-- INPUT -->
+
   <div class="input-area">
 
     <button
       class="icon-btn"
-      id="image
+      id="imageBtn"
+      type="button"
+      onclick="document.getElementById('imageInput').click()">
+      📷
+    </button>
+
+    <input
+      id="imageInput"
+      type="file"
+      accept="image/*">
+
+
+    <div class="input-box">
+
+      <input
+        id="message"
+        type="text"
+        placeholder="نامەکەت بنووسە..."
+        autocomplete="off">
+
+      <button
+        class="icon-btn"
+        id="mic"
+        type="button"
+        onclick="startVoice()">
+        🎙️
+      </button>
+
+    </div>
+
+
+    <button
+      id="send"
+      type="button"
+      onclick="sendMessage()">
+      ➤
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+let messages = [];
+
+let recognition = null;
+
+
+/* =========================
+   THEME
+========================= */
+
+function toggleTheme() {
+
+  document.body.classList.toggle("dark");
+
+  const dark =
+    document.body.classList.contains("dark");
+
+  document.getElementById("themeBtn").textContent =
+    dark ? "☀️" : "🌙";
+
+  localStorage.setItem(
+    "samanai-theme",
+    dark ? "dark" : "light"
+  );
+
+}
+
+
+function loadTheme() {
+
+  const theme =
+    localStorage.getItem("samanai-theme");
+
+  if (theme === "dark") {
+
+    document.body.classList.add("dark");
+
+    document.getElementById("themeBtn").textContent =
+      "☀️";
+
+  }
+
+}
+
+loadTheme();
+
+
+/* =========================
+   VOICE
+========================= */
+
+const SpeechRecognition =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
+
+
+if (SpeechRecognition) {
+
+  recognition =
+    new SpeechRecognition();
+
+  recognition.lang = "ku-IQ";
+
+  recognition.continuous = false;
+
+  recognition.interimResults = false;
+
+
+  recognition.onstart = function() {
+
+    document
+      .getElementById("mic")
+      .classList.add("recording");
+
+    document
+      .getElementById("status")
+      .textContent =
+      "🎙️ گوێم لێتە...";
+
+  };
+
+
+  recognition.onresult = function(event) {
+
+    let text =
+      event.results[0][0].transcript;
+
+
+    text = text
+      .replace(/سومەر/gi, "سامان")
+      .replace(/سۆمەر/gi, "سامان")
+      .replace(/سومار/gi, "سامان")
+      .replace(/Sumer/gi, "Saman");
+
+
+    document
+      .getElementById("message")
+      .value = text;
+
+
+    document
+      .getElementById("status")
+      .textContent =
+      "دەنگەکە وەرگیرا 🎤";
+
+
+    sendMessage();
+
+  };
+
+
+  recognition.onerror = function() {
+
+    document
+      .getElementById("status")
+      .textContent =
+      "نەتوانرا دەنگ وەرگیرێت.";
+
+  };
+
+
+  recognition.onend = function() {
+
+    document
+      .getElementById("mic")
+      .classList.remove("recording");
+
+  };
+
+}
+
+
+function startVoice() {
+
+  if (!recognition) {
+
+    alert(
+      "Browser ـەکەت Speech Recognition پشتگیری ناکات. Chrome تاقی بکەرەوە."
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    recognition.start();
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+
+}
+
+
+/* =========================
+   IMAGE
+========================= */
+
+document
+  .getElementById("imageInput")
+  .addEventListener(
+    "change",
+    handleImage
+  );
+
+
+async function handleImage(event) {
+
+  const file =
+    event.target.files[0];
+
+  if (!file) return;
+
+
+  const chat =
+    document.getElementById("chat");
+
+
+  const welcome =
+    document.getElementById("welcome");
+
+  if (welcome) {
+    welcome.remove();
+  }
+
+
+  const imageMessage =
+    document.createElement("div");
+
+  imageMessage.className =
+    "message user";
+
+
+  const image =
+    document.createElement("img");
+
+  image.src =
+    URL.createObjectURL(file);
+
+
+  imageMessage.appendChild(image);
+
+  chat.appendChild(imageMessage);
+
+
+  chat.scrollTop =
+    chat.scrollHeight;
+
+
+  const base64 =
+    await fileToBase64(file);
+
+
+  try {
+
+    const response =
+      await fetch("/api/chat", {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+
+          messages: messages,
+
+          image: base64,
+
+          imageType: file.type
+
+        })
+
+      });
+
+
+    const data =
+      await response.json();
+
+
+    const reply =
+      document.createElement("div");
+
+    reply.className =
+      "message ai";
+
+
+    reply.textContent =
+      data.reply ||
+      data.error ||
+      "هەڵەیەک ڕوویدا.";
+
+
+    chat.appendChild(reply);
+
+
+    if (data.reply) {
+      speak(data.reply);
+    }
+
+
+  } catch (error) {
+
+    const errorMessage =
+      document.createElement("div");
+
+    errorMessage.className =
+      "message ai";
+
+    errorMessage.textContent =
+      "نەتوانرا وێنەکە بنێردرێت.";
+
+    chat.appendChild(errorMessage);
+
+  }
+
+
+  chat.scrollTop =
+    chat.scrollHeight;
+
+
+  event.target.value = "";
+
+}
+
+
+function fileToBase64(file) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload = function() {
+
+        resolve(
+          reader.result.split(",")[1]
+        );
+
+      };
+
+
+      reader.onerror =
+        reject;
+
+
+      reader.readAsDataURL(file);
+
+    }
+  );
+
+}
+
+
+/* =========================
+   SEND MESSAGE
+========================= */
+
+async function sendMessage() {
+
+  const input =
+    document.getElementById("message");
+
+  const button =
+    document.getElementById("send");
+
+  const chat =
+    document.getElementById("chat");
+
+
+  const message =
+    input.value.trim();
+
+
+  if (!message) return;
+
+
+  const welcome =
+    document.getElementById("welcome");
+
+  if (welcome) {
+    welcome.remove();
+  }
+
+
+  const userMessage =
+    document.createElement("div");
+
+  userMessage.className =
+    "message user";
+
+  userMessage.textContent =
+    message;
+
+
+  chat.appendChild(userMessage);
+
+
+  messages.push({
+
+    role: "user",
+
+    content: message
+
+  });
+
+
+  input.value = "";
+
+  button.disabled = true;
+
+
+  const loading =
+    document.createElement("div");
+
+  loading.className =
+    "message ai";
+
+  loading.textContent =
+    "SamanAI دەفکەرێت... 🤔";
+
+
+  chat.appendChild(loading);
+
+
+  chat.scrollTop =
+    chat.scrollHeight;
+
+
+  try {
+
+    const response =
+      await fetch("/api/chat", {
+
+        method: "POST",
+
+        headers: {
+
+          "Content-Type":
+            "application/json"
+
+        },
+
+        body: JSON.stringify({
+
+          messages: messages
+
+        })
+
+      });
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      loading.textContent =
+        data.error ||
+        "هەڵەیەک ڕوویدا.";
+
+    } else {
+
+      loading.textContent =
+        data.reply;
+
+
+      messages.push({
+
+        role: "assistant",
+
+        content: data.reply
+
+      });
+
+
+      speak(data.reply);
+
+    }
+
+
+  } catch (error) {
+
+    loading.textContent =
+      "پەیوەندی بە AI نەکرا.";
+
+  }
+
+
+  button.disabled = false;
+
+  input.focus();
+
+
+  chat.scrollTop =
+    chat.scrollHeight;
+
+}
+
+
+/* =========================
+   SPEECH
+========================= */
+
+function speak(text) {
+
+  if (!("speechSynthesis" in window)) {
+    return;
+  }
+
+
+  window.speechSynthesis.cancel();
+
+
+  const speech =
+    new SpeechSynthesisUtterance(text);
+
+
+  speech.lang = "ku";
+
+  speech.rate = 0.95;
+
+  speech.pitch = 1;
+
+
+  window.speechSynthesis.speak(
+    speech
+  );
+
+}
+
+
+/* =========================
+   ENTER
+========================= */
+
+document
+  .getElementById("message")
+  .addEventListener(
+    "keydown",
+    function(event) {
+
+      if (event.key === "Enter") {
+
+        event.preventDefault();
+
+        sendMessage();
+
+      }
+
+    }
+  );
+
+</script>
+
+</body>
+</html>
