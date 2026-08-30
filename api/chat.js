@@ -4,14 +4,38 @@ export default async function handler(req, res) {
   try {
     const { messages = [] } = req.body || {};
 
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL is missing");
+    }
+
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY is missing");
+    }
+
     const sql = neon(process.env.DATABASE_URL);
 
     const userId = "samanai-user";
 
-    // خوێندنەوەی Memory ـەکانی پێشوو
+    // =====================================================
+    // 1. دڵنیابوون لە بوونی Memory table
+    // =====================================================
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS public.memories (
+        id SERIAL PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        memory TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // =====================================================
+    // 2. خوێندنەوەی Memory ـەکانی پێشوو
+    // =====================================================
+
     const memoryRows = await sql`
       SELECT memory
-      FROM memories
+      FROM public.memories
       WHERE user_id = ${userId}
       ORDER BY created_at ASC
     `;
@@ -24,7 +48,10 @@ export default async function handler(req, res) {
       ? `Memory ـەکانی بەکارهێنەر:\n${memories}`
       : "هیچ Memory ـێک هێشتا نییە.";
 
-    // ناردنی Memory + گفتوگۆ بۆ Gemini
+    // =====================================================
+    // 3. ناردنی Memory + گفتوگۆ بۆ Gemini
+    // =====================================================
+
     const contents = [
       {
         role: "user",
@@ -40,7 +67,7 @@ export default async function handler(req, res) {
       },
       ...messages.map((m) => ({
         role: m.role === "assistant" ? "model" : "user",
-        parts: [{ text: m.content }]
+        parts: [{ text: String(m.content || "") }]
       }))
     ];
 
@@ -74,7 +101,10 @@ export default async function handler(req, res) {
         .join("") ||
       "No response received.";
 
-    // پشکنینی داوای Memory
+    // =====================================================
+    // 4. پشکنینی داوای Memory
+    // =====================================================
+
     const lastMessage =
       messages[messages.length - 1]?.content || "";
 
@@ -83,11 +113,14 @@ export default async function handler(req, res) {
         lastMessage
       );
 
-    // هەڵگرتنی Memory لە Neon
+    // =====================================================
+    // 5. هەڵگرتنی Memory
+    // =====================================================
+
     if (memoryRequest && lastMessage.trim()) {
       await sql`
-        INSERT INTO memories (user_id, memory)
-        VALUES (${userId}, ${lastMessage})
+        INSERT INTO public.memories (user_id, memory)
+        VALUES (${userId}, ${lastMessage.trim()})
       `;
     }
 
