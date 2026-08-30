@@ -8,18 +8,19 @@ export default async function handler(req, res) {
       throw new Error("DATABASE_URL is missing");
     }
 
-    if (!process.env.GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY is missing");
+    if (!process.env.OPENROUTER_API_KEY) {
+      throw new Error("OPENROUTER_API_KEY is missing");
     }
 
     const sql = neon(process.env.DATABASE_URL);
 
-    // User ID ـی کۆن هەر دەمێنێتەوە بۆ ئەوەی Memory ـەکانی پێشووت نەون.
-    const userId =
-      String(incomingUserId || "samanai-user").trim();
+    // هەمان User ID ـی پێشووتر، بۆ پاراستنی Memory ـەکانی کۆن
+    const userId = String(
+      incomingUserId || "samanai-user"
+    ).trim();
 
     // =====================================================
-    // 1. دڵنیابوون لە بوونی خشتەی Memory
+    // 1. دڵنیابوون لە بوونی Memory table
     // =====================================================
 
     await sql`
@@ -42,7 +43,7 @@ export default async function handler(req, res) {
       String(lastMessage).trim();
 
     // =====================================================
-    // 3. دۆزینەوەی ناوی بەکارهێنەر
+    // 3. دۆزینەوەی ناو
     // =====================================================
 
     let detectedName = null;
@@ -63,7 +64,7 @@ export default async function handler(req, res) {
     }
 
     // =====================================================
-    // 4. پشکنینی داواکاریی Memory
+    // 4. داواکاری Memory
     // =====================================================
 
     const memoryRequest =
@@ -145,123 +146,51 @@ export default async function handler(req, res) {
       "هیچ Memory ـێک هێشتا تۆمار نەکراوە.";
 
     // =====================================================
-    // 8. ڕێنمایی SamanAI
+    // 8. System Instruction
     // =====================================================
 
-    const systemInstruction = {
-      parts: [
-        {
-          text:
-            `تۆ SamanAI ـیت، یاریدەدەری زیرەکی بەکارهێنەر.
+    const systemPrompt = `
+تۆ SamanAI ـیت، یاریدەدەری زیرەکی بەکارهێنەر.
 
-ئەمە تەنها Memory ـەکانی ئەم بەکارهێنەرەن:
+ئەمە Memory ـەکانی ئەم بەکارهێنەرەن:
+
 ${memoryText}
 
 ڕێساکانی Memory:
 
-1. ئەگەر لە Memory ـدا ناوی بەکارهێنەر هەیە، بە هەمان ناو بانگی بکە.
-
-2. ئەگەر ناوی بەکارهێنەر لە Memory ـدا هەیە، هەرگیز مەڵێ "ناوت نازانم".
-
-3. Memory ـەکان بە ڕاستی وەک زانیاریی پێشووی ئەم بەکارهێنەرە مامەڵەیان لەگەڵ بکە.
-
-4. هیچ Memory ـێک مەگۆڕە یان مەسڕەوە، مەگەر بەکارهێنەر بە ڕوونی داوای سڕینەوە بکات.
-
-5. ئەگەر Memory پەیوەندیدار بە پرسیارەکەی هەیە، بە شێوەی سروشتی بەکاری بهێنە.
-
-6. Memory ـی هیچ بەکارهێنەرێکی تر مەزانە و مەخەیتە ناو وەڵامەکەت.
-
-7. ئەگەر Memory پەیوەندیدار نییە، پێویست نییە باسی بکەیت.
-
-8. وەڵامەکانت بە کوردیی سۆرانی و سروشتی بن.`
-        }
-      ]
-    };
+1. ئەگەر ناوی بەکارهێنەر لە Memory ـدا هەیە، بە هەمان ناو بانگی بکە.
+2. هەرگیز مەڵێ ناوی بەکارهێنەر نازانیت ئەگەر لە Memory ـدا هەیە.
+3. Memory ـەکان وەک زانیاریی پێشووی بەکارهێنەر بەکاربهێنە.
+4. هیچ Memory ـێک مەسڕەوە یان مەگۆڕە، مەگەر بەکارهێنەر بە ڕوونی داوای ئەوە بکات.
+5. Memory ـی بەکارهێنەرێکی تر بەکارمەهێنە.
+6. ئەگەر Memory پەیوەندیدار نییە، باسی مەکە.
+7. هەموو وەڵامەکان بە کوردیی سۆرانی و سروشتی بن.
+`;
 
     // =====================================================
-    // 9. ناردنی گفتوگۆ بۆ Gemini
+    // 9. گفتوگۆ
     // =====================================================
 
     const contents = messages.map((m) => ({
       role:
         m.role === "assistant"
-          ? "model"
+          ? "assistant"
           : "user",
 
-      parts: [
-        {
-          text: String(m.content || "")
-        }
-      ]
+      content: String(m.content || "")
     }));
 
+    // =====================================================
+    // 10. OpenRouter
+    // =====================================================
+
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=" +
-        process.env.GEMINI_API_KEY,
+      "https://openrouter.ai/api/v1/chat/completions",
       {
         method: "POST",
 
         headers: {
-          "Content-Type":
-            "application/json"
-        },
-
-        body: JSON.stringify({
-          systemInstruction,
-          contents
-        })
-      }
-    );
-
-    const data =
-      await response.json();
-
-    // =====================================================
-    // 10. پشکنینی هەڵەی Gemini
-    // =====================================================
-
-    if (!response.ok) {
-      console.error(
-        "GEMINI ERROR:",
-        data
-      );
-
-      return res.status(
-        response.status
-      ).json({
-        error:
-          data.error?.message ||
-          "Gemini API error"
-      });
-    }
-
-    // =====================================================
-    // 11. وەرگرتنی وەڵامی AI
-    // =====================================================
-
-    const reply =
-      data.candidates?.[0]?.content?.parts
-        ?.map(
-          (part) =>
-            part.text || ""
-        )
-        .join("") ||
-      "No response received.";
-
-    return res.status(200).json({
-      reply
-    });
-
-  } catch (error) {
-    console.error(
-      "SERVER ERROR:",
-      error
-    );
-
-    return res.status(500).json({
-      error:
-        error.message ||
-        "Server error"
-    });
-  }
-}
+          "Content-Type": "application/json",
+          "Authorization":
+            `Bearer ${process.env.OPENROUTER_API_KEY}`,
+         
