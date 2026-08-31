@@ -3,8 +3,11 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>SamanAI</title>
 
@@ -59,13 +62,16 @@
       max-width: 900px;
       height: 100dvh;
       margin: auto;
+
       display: flex;
       flex-direction: column;
+
       background: var(--bg);
     }
 
     header {
       flex-shrink: 0;
+
       height: 72px;
       padding: 10px 14px;
 
@@ -74,7 +80,9 @@
       justify-content: space-between;
 
       background: var(--card);
-      border-bottom: 1px solid var(--border);
+
+      border-bottom:
+        1px solid var(--border);
     }
 
     .brand {
@@ -94,9 +102,11 @@
       justify-content: center;
 
       background: #111827;
+
       font-size: 25px;
 
-      box-shadow: 0 7px 22px rgba(0,0,0,.12);
+      box-shadow:
+        0 7px 22px rgba(0, 0, 0, .12);
     }
 
     .brand-text h1 {
@@ -106,7 +116,9 @@
 
     .brand-text p {
       margin: 3px 0 0;
+
       color: var(--muted);
+
       font-size: 11px;
     }
 
@@ -122,6 +134,7 @@
       gap: 5px;
 
       color: #16a34a;
+
       font-size: 11px;
       font-weight: bold;
     }
@@ -129,7 +142,9 @@
     .dot {
       width: 8px;
       height: 8px;
+
       border-radius: 50%;
+
       background: #22c55e;
     }
 
@@ -138,12 +153,15 @@
       height: 42px;
 
       border-radius: 13px;
+
       border: 1px solid var(--border);
 
       background: var(--bg);
       color: var(--text);
 
       font-size: 19px;
+
+      cursor: pointer;
     }
 
     #chat {
@@ -168,10 +186,10 @@
 
     .welcome {
       height: 100%;
-      min-height: 0;
 
       display: flex;
       flex-direction: column;
+
       align-items: center;
       justify-content: center;
 
@@ -195,7 +213,7 @@
       font-size: 52px;
 
       box-shadow:
-        0 15px 40px rgba(0,0,0,.16);
+        0 15px 40px rgba(0, 0, 0, .16);
 
       margin-bottom: 20px;
     }
@@ -204,6 +222,7 @@
       margin: 0;
 
       font-size: 27px;
+
       color: var(--text);
     }
 
@@ -213,11 +232,13 @@
       color: var(--muted);
 
       font-size: 14px;
+
       line-height: 1.8;
     }
 
     .message {
       width: fit-content;
+
       max-width: 88%;
 
       padding: 12px 15px;
@@ -229,9 +250,11 @@
       line-height: 1.7;
 
       white-space: pre-wrap;
+
       word-break: break-word;
 
-      animation: appear .2s ease;
+      animation:
+        appear .2s ease;
     }
 
     @keyframes appear {
@@ -252,6 +275,7 @@
       margin-right: auto;
 
       background: var(--bubble-user);
+
       color: white;
 
       border-bottom-right-radius: 5px;
@@ -261,19 +285,23 @@
       margin-left: auto;
 
       background: var(--bubble-ai);
+
       color: var(--text);
 
-      border: 1px solid var(--border);
+      border:
+        1px solid var(--border);
 
       border-bottom-left-radius: 5px;
 
-      box-shadow: 0 3px 12px rgba(0,0,0,.04);
+      box-shadow:
+        0 3px 12px rgba(0, 0, 0, .04);
     }
 
     .message img {
       display: block;
 
       max-width: 280px;
+
       width: 100%;
 
       border-radius: 14px;
@@ -299,15 +327,21 @@
       padding: 9px 10px;
 
       padding-bottom:
-        calc(9px + env(safe-area-inset-bottom));
+        calc(
+          9px +
+          env(safe-area-inset-bottom)
+        );
 
       display: flex;
+
       align-items: center;
+
       gap: 7px;
 
       background: var(--card);
 
-      border-top: 1px solid var(--border);
+      border-top:
+        1px solid var(--border);
     }
 
     .input-box {
@@ -318,11 +352,13 @@
       height: 50px;
 
       display: flex;
+
       align-items: center;
 
       background: var(--bg);
 
-      border: 1px solid var(--border);
+      border:
+        1px solid var(--border);
 
       border-radius: 17px;
 
@@ -400,27 +436,37 @@
 
     #send:disabled {
       opacity: .45;
+
+      cursor: not-allowed;
     }
 
     #mic.recording {
       background: #dc2626;
+
       color: white;
 
-      animation: pulse 1s infinite;
+      animation:
+        pulse 1s infinite;
     }
 
     @keyframes pulse {
 
       0% {
-        box-shadow: 0 0 0 0 rgba(220,38,38,.4);
+        box-shadow:
+          0 0 0 0
+          rgba(220, 38, 38, .4);
       }
 
       70% {
-        box-shadow: 0 0 0 10px rgba(220,38,38,0);
+        box-shadow:
+          0 0 0 10px
+          rgba(220, 38, 38, 0);
       }
 
       100% {
-        box-shadow: 0 0 0 0 rgba(220,38,38,0);
+        box-shadow:
+          0 0 0 0
+          rgba(220, 38, 38, 0);
       }
 
     }
@@ -433,6 +479,7 @@
 
       header {
         height: 66px;
+
         padding: 8px 10px;
       }
 
@@ -474,6 +521,7 @@
 
       .input-area {
         gap: 5px;
+
         padding-left: 7px;
         padding-right: 7px;
       }
@@ -485,12 +533,14 @@
       .icon-btn {
         width: 40px;
         height: 40px;
+
         min-width: 40px;
       }
 
       #send {
         width: 47px;
         height: 47px;
+
         min-width: 47px;
       }
 
@@ -498,6 +548,7 @@
 
   </style>
 </head>
+
 
 <body>
 
@@ -515,29 +566,39 @@
 
         <h1>SamanAI</h1>
 
-        <p>یاریدەدەری زیرەکی تۆ</p>
+        <p>
+          یاریدەدەری زیرەکی تۆ
+        </p>
 
       </div>
 
     </div>
 
+
     <div class="header-right">
 
       <div class="online">
+
         <span class="dot"></span>
+
         Online
+
       </div>
+
 
       <button
         id="themeBtn"
         type="button"
         onclick="toggleTheme()">
+
         🌙
+
       </button>
 
     </div>
 
   </header>
+
 
   <div id="chat">
 
@@ -554,16 +615,23 @@
       </h2>
 
       <p>
+
         من ئامادەم بۆ گفتوگۆ ❤️
+
         <br>
-        بنووسە، قسە بکە، یان وێنەیەک بنێرە.
+
+        بنووسە، قسە بکە،
+        یان وێنەیەک بنێرە.
+
       </p>
 
     </div>
 
   </div>
 
+
   <div id="status"></div>
+
 
   <div class="input-area">
 
@@ -571,14 +639,23 @@
       class="icon-btn"
       id="imageBtn"
       type="button"
-      onclick="document.getElementById('imageInput').click()">
+      onclick="
+        document
+          .getElementById('imageInput')
+          .click()
+      ">
+
       📷
+
     </button>
+
 
     <input
       id="imageInput"
       type="file"
-      accept="image/*">
+      accept="image/*"
+    >
+
 
     <div class="input-box">
 
@@ -586,33 +663,51 @@
         id="message"
         type="text"
         placeholder="نامەکەت بنووسە..."
-        autocomplete="off">
+        autocomplete="off"
+      >
+
 
       <button
         class="icon-btn"
         id="mic"
         type="button"
         onclick="startVoice()">
+
         🎙️
+
       </button>
 
     </div>
+
 
     <button
       id="send"
       type="button"
       onclick="sendMessage()">
+
       ➤
+
     </button>
 
   </div>
 
 </div>
 
+
 <script>
 
+/* =========================
+   STATE
+========================= */
+
 let messages = [];
+
 let recognition = null;
+
+let isSending = false;
+
+const MESSAGE_STORAGE_KEY =
+  "samanai-messages";
 
 
 /* =========================
@@ -622,13 +717,17 @@ let recognition = null;
 function getUserId() {
 
   let userId =
-    localStorage.getItem("samanai-user-id");
+    localStorage.getItem(
+      "samanai-user-id"
+    );
+
 
   if (!userId) {
 
     if (
       window.crypto &&
-      typeof window.crypto.randomUUID === "function"
+      typeof window.crypto.randomUUID ===
+        "function"
     ) {
 
       userId =
@@ -646,16 +745,230 @@ function getUserId() {
 
     }
 
+
     localStorage.setItem(
       "samanai-user-id",
       userId
     );
+
   }
+
 
   return userId;
 }
 
-const userId = getUserId();
+
+const userId =
+  getUserId();
+
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const input =
+  document.getElementById(
+    "message"
+  );
+
+const button =
+  document.getElementById(
+    "send"
+  );
+
+const chat =
+  document.getElementById(
+    "chat"
+  );
+
+const status =
+  document.getElementById(
+    "status"
+  );
+
+const mic =
+  document.getElementById(
+    "mic"
+  );
+
+const imageInput =
+  document.getElementById(
+    "imageInput"
+  );
+
+
+/* =========================
+   STORAGE
+========================= */
+
+function saveMessages() {
+
+  try {
+
+    /*
+      تەنها 50 پەیامی کۆتایی
+      هەڵدەگرین بۆ ئەوەی
+      request ـەکان زۆر گەورە نەبن.
+    */
+
+    const recent =
+      messages.slice(-50);
+
+    localStorage.setItem(
+      MESSAGE_STORAGE_KEY,
+      JSON.stringify(recent)
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Cannot save messages:",
+      error
+    );
+
+  }
+
+}
+
+
+function loadMessages() {
+
+  try {
+
+    const saved =
+      localStorage.getItem(
+        MESSAGE_STORAGE_KEY
+      );
+
+    if (!saved) {
+      return;
+    }
+
+    const parsed =
+      JSON.parse(saved);
+
+    if (!Array.isArray(parsed)) {
+      return;
+    }
+
+    messages =
+      parsed.filter(function(item) {
+
+        return (
+          item &&
+          typeof item.role ===
+            "string" &&
+          typeof item.content ===
+            "string"
+        );
+
+      });
+
+  } catch (error) {
+
+    console.error(
+      "Cannot load messages:",
+      error
+    );
+
+    messages = [];
+
+  }
+
+}
+
+
+/* =========================
+   RENDER HISTORY
+========================= */
+
+function renderMessages() {
+
+  /*
+    پاککردنەوەی چات بۆ
+    دروستکردنەوەی history.
+  */
+
+  chat.innerHTML = "";
+
+
+  if (messages.length === 0) {
+
+    const welcome =
+      document.createElement(
+        "div"
+      );
+
+    welcome.className =
+      "welcome";
+
+    welcome.id =
+      "welcome";
+
+    welcome.innerHTML = `
+      <div class="welcome-logo">
+        🤖
+      </div>
+
+      <h2>
+        بەخێربێیت بۆ SamanAI
+      </h2>
+
+      <p>
+        من ئامادەم بۆ گفتوگۆ ❤️
+        <br>
+        بنووسە، قسە بکە،
+        یان وێنەیەک بنێرە.
+      </p>
+    `;
+
+    chat.appendChild(
+      welcome
+    );
+
+    return;
+  }
+
+
+  messages.forEach(
+    function(item) {
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+      div.className =
+        item.role === "user"
+          ? "message user"
+          : "message ai";
+
+      div.textContent =
+        item.content;
+
+      chat.appendChild(
+        div
+      );
+
+    }
+  );
+
+
+  scrollChat();
+
+}
+
+
+/* =========================
+   SCROLL
+========================= */
+
+function scrollChat() {
+
+  chat.scrollTop =
+    chat.scrollHeight;
+
+}
 
 
 /* =========================
@@ -664,17 +977,30 @@ const userId = getUserId();
 
 function toggleTheme() {
 
-  document.body.classList.toggle("dark");
+  document.body.classList.toggle(
+    "dark"
+  );
+
 
   const dark =
-    document.body.classList.contains("dark");
+    document.body.classList.contains(
+      "dark"
+    );
 
-  document.getElementById("themeBtn").textContent =
-    dark ? "☀️" : "🌙";
+
+  document.getElementById(
+    "themeBtn"
+  ).textContent =
+    dark
+      ? "☀️"
+      : "🌙";
+
 
   localStorage.setItem(
     "samanai-theme",
-    dark ? "dark" : "light"
+    dark
+      ? "dark"
+      : "light"
   );
 
 }
@@ -683,24 +1009,126 @@ function toggleTheme() {
 function loadTheme() {
 
   const theme =
-    localStorage.getItem("samanai-theme");
+    localStorage.getItem(
+      "samanai-theme"
+    );
+
 
   if (theme === "dark") {
 
-    document.body.classList.add("dark");
+    document.body.classList.add(
+      "dark"
+    );
 
-    document.getElementById("themeBtn").textContent =
+    document.getElementById(
+      "themeBtn"
+    ).textContent =
       "☀️";
 
   }
 
 }
 
-loadTheme();
+
+/* =========================
+   TEXT TO SPEECH
+========================= */
+
+function speak(text) {
+
+  /*
+    ئەگەر Browser ـەکە
+    speechSynthesis پشتگیری نەکات
+    هیچ هەڵەیەک دروست ناکات.
+  */
+
+  if (
+    !("speechSynthesis" in window)
+  ) {
+
+    return;
+
+  }
+
+
+  if (!text) {
+    return;
+  }
+
+
+  try {
+
+    window.speechSynthesis.cancel();
+
+
+    const utterance =
+      new SpeechSynthesisUtterance(
+        String(text)
+      );
+
+
+    /*
+      Kurdish ـە.
+      هەموو مۆبایلێک voice ـی
+      کوردی نییە، بۆیە browser
+      خۆی نزیکترین voice بەکاردهێنێت.
+    */
+
+    utterance.lang =
+      "ku-IQ";
+
+    utterance.rate =
+      0.95;
+
+    utterance.pitch =
+      1;
+
+
+    const voices =
+      window.speechSynthesis
+        .getVoices();
+
+
+    const kurdishVoice =
+      voices.find(
+        function(voice) {
+
+          return (
+            voice.lang &&
+            voice.lang
+              .toLowerCase()
+              .startsWith("ku")
+          );
+
+        }
+      );
+
+
+    if (kurdishVoice) {
+
+      utterance.voice =
+        kurdishVoice;
+
+    }
+
+
+    window.speechSynthesis
+      .speak(utterance);
+
+  } catch (error) {
+
+    console.error(
+      "Speech error:",
+      error
+    );
+
+  }
+
+}
 
 
 /* =========================
-   VOICE
+   VOICE RECOGNITION
 ========================= */
 
 const SpeechRecognition =
@@ -713,72 +1141,104 @@ if (SpeechRecognition) {
   recognition =
     new SpeechRecognition();
 
-  recognition.lang = "ku-IQ";
 
-  recognition.continuous = false;
-
-  recognition.interimResults = false;
+  recognition.lang =
+    "ku-IQ";
 
 
-  recognition.onstart = function() {
-
-    document
-      .getElementById("mic")
-      .classList.add("recording");
-
-    document
-      .getElementById("status")
-      .textContent =
-      "🎙️ گوێم لێتە...";
-
-  };
+  recognition.continuous =
+    false;
 
 
-  recognition.onresult = function(event) {
-
-    let text =
-      event.results[0][0].transcript;
-
-    text = text
-      .replace(/سومەر/gi, "سامان")
-      .replace(/سۆمەر/gi, "سامان")
-      .replace(/سومار/gi, "سامان")
-      .replace(/Sumer/gi, "Saman");
-
-    document
-      .getElementById("message")
-      .value = text;
-
-    document
-      .getElementById("status")
-      .textContent =
-      "دەنگەکە وەرگیرا 🎤";
-
-    sendMessage();
-
-  };
+  recognition.interimResults =
+    false;
 
 
-  recognition.onerror = function() {
+  recognition.onstart =
+    function() {
 
-    document
-      .getElementById("status")
-      .textContent =
-      "نەتوانرا دەنگ وەرگیرێت.";
-
-  };
+      mic.classList.add(
+        "recording"
+      );
 
 
-  recognition.onend = function() {
+      status.textContent =
+        "🎙️ گوێم لێتە...";
 
-    document
-      .getElementById("mic")
-      .classList.remove("recording");
+    };
 
-  };
+
+  recognition.onresult =
+    function(event) {
+
+      let text =
+        event
+          .results[0][0]
+          .transcript;
+
+
+      text =
+        text
+          .replace(
+            /سومەر/gi,
+            "سامان"
+          )
+          .replace(
+            /سۆمەر/gi,
+            "سامان"
+          )
+          .replace(
+            /سومار/gi,
+            "سامان"
+          )
+          .replace(
+            /Sumer/gi,
+            "Saman"
+          );
+
+
+      input.value =
+        text;
+
+
+      status.textContent =
+        "دەنگەکە وەرگیرا 🎤";
+
+
+      /*
+        دوای وەرگرتنی دەنگ،
+        خۆکارانە دەنێرین.
+      */
+
+      sendMessage();
+
+    };
+
+
+  recognition.onerror =
+    function() {
+
+      status.textContent =
+        "نەتوانرا دەنگ وەرگیرێت.";
+
+    };
+
+
+  recognition.onend =
+    function() {
+
+      mic.classList.remove(
+        "recording"
+      );
+
+    };
 
 }
 
+
+/* =========================
+   START VOICE
+========================= */
 
 function startVoice() {
 
@@ -792,13 +1252,22 @@ function startVoice() {
 
   }
 
+
+  if (isSending) {
+    return;
+  }
+
+
   try {
 
     recognition.start();
 
   } catch (error) {
 
-    console.log(error);
+    console.log(
+      "Voice already running:",
+      error
+    );
 
   }
 
@@ -809,12 +1278,10 @@ function startVoice() {
    IMAGE
 ========================= */
 
-document
-  .getElementById("imageInput")
-  .addEventListener(
-    "change",
-    handleImage
-  );
+imageInput.addEventListener(
+  "change",
+  handleImage
+);
 
 
 async function handleImage(event) {
@@ -822,128 +1289,358 @@ async function handleImage(event) {
   const file =
     event.target.files[0];
 
-  if (!file) return;
 
-  const chat =
-    document.getElementById("chat");
+  if (!file) {
+    return;
+  }
+
+
+  /*
+    سنووری پاراستن.
+    وێنەی زۆر گەورە request ـەکە
+    قورس دەکات.
+  */
+
+  if (
+    file.size >
+    10 * 1024 * 1024
+  ) {
+
+    status.textContent =
+      "وێنەکە زۆر گەورەیە. تکایە وێنەیەکی کەمتر لە 10MB هەڵبژێرە.";
+
+    event.target.value =
+      "";
+
+    return;
+
+  }
+
 
   const welcome =
-    document.getElementById("welcome");
+    document.getElementById(
+      "welcome"
+    );
+
 
   if (welcome) {
     welcome.remove();
   }
 
+
   const imageMessage =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   imageMessage.className =
     "message user";
 
+
   const image =
-    document.createElement("img");
+    document.createElement(
+      "img"
+    );
+
 
   image.src =
-    URL.createObjectURL(file);
+    URL.createObjectURL(
+      file
+    );
 
-  imageMessage.appendChild(image);
 
-  chat.appendChild(imageMessage);
+  image.alt =
+    "وێنەی بەکارهێنەر";
 
-  chat.scrollTop =
-    chat.scrollHeight;
 
-  const base64 =
-    await fileToBase64(file);
+  imageMessage.appendChild(
+    image
+  );
+
+
+  chat.appendChild(
+    imageMessage
+  );
+
+
+  scrollChat();
+
+
+  status.textContent =
+    "وێنەکە دەنێردرێت...";
+
 
   try {
 
+    const base64 =
+      await fileToBase64(
+        file
+      );
+
+
     const response =
-      await fetch("/api/chat", {
+      await fetch(
+        "/api/chat",
+        {
 
-        method: "POST",
+          method: "POST",
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+          headers: {
 
-        body: JSON.stringify({
+            "Content-Type":
+              "application/json"
 
-          messages: messages,
+          },
 
-          image: base64,
+          body:
+            JSON.stringify({
 
-          imageType: file.type,
+              messages:
+                messages,
 
-          userId: userId
+              image:
+                base64,
 
-        })
+              imageType:
+                file.type,
 
-      });
+              userId:
+                userId
 
-    const data =
-      await response.json();
+            })
+
+        }
+      );
+
+
+    let data;
+
+
+    try {
+
+      data =
+        await response.json();
+
+    } catch (jsonError) {
+
+      throw new Error(
+        "وەڵامی API ـەکە JSON نییە."
+      );
+
+    }
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.error ||
+        "ناردنی وێنە سەرکەوتوو نەبوو."
+      );
+
+    }
+
 
     const reply =
-      document.createElement("div");
+      data.reply;
 
-    reply.className =
+
+    if (!reply) {
+
+      throw new Error(
+        data.error ||
+        "SamanAI وەڵامێکی نەگەڕاندەوە."
+      );
+
+    }
+
+
+    /*
+      وێنەکە وەک بەشێک لە
+      history تۆمار دەکەین.
+    */
+
+    messages.push({
+
+      role: "user",
+
+      content:
+        "[وێنەیەک نێردرا]"
+
+    });
+
+
+    messages.push({
+
+      role: "assistant",
+
+      content:
+        String(reply)
+
+    });
+
+
+    saveMessages();
+
+
+    const replyMessage =
+      document.createElement(
+        "div"
+      );
+
+
+    replyMessage.className =
       "message ai";
 
-    reply.textContent =
-      data.reply ||
-      data.error ||
-      "هەڵەیەک ڕوویدا.";
 
-    chat.appendChild(reply);
+    replyMessage.textContent =
+      String(reply);
 
-    if (data.reply) {
-      speak(data.reply);
-    }
+
+    chat.appendChild(
+      replyMessage
+    );
+
+
+    speak(reply);
+
+
+    status.textContent =
+      "وێنەکە پشکنرا ✅";
+
 
   } catch (error) {
 
+    console.error(
+      "SamanAI image error:",
+      error
+    );
+
+
     const errorMessage =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
+
 
     errorMessage.className =
       "message ai";
 
-    errorMessage.textContent =
-      "نەتوانرا وێنەکە بنێردرێت.";
 
-    chat.appendChild(errorMessage);
+    errorMessage.textContent =
+      "هەڵەی ناردنی وێنە: " +
+      (
+        error &&
+        error.message
+          ? error.message
+          : "هەڵەی نەناسراو"
+      );
+
+
+    chat.appendChild(
+      errorMessage
+    );
+
+
+    status.textContent =
+      "ناردنی وێنە سەرکەوتوو نەبوو.";
+
+
+  } finally {
+
+    URL.revokeObjectURL(
+      image.src
+    );
+
+
+    event.target.value =
+      "";
+
+
+    scrollChat();
 
   }
-
-  chat.scrollTop =
-    chat.scrollHeight;
-
-  event.target.value = "";
 
 }
 
 
+/* =========================
+   FILE TO BASE64
+========================= */
+
 function fileToBase64(file) {
 
   return new Promise(
-    (resolve, reject) => {
+    function(resolve, reject) {
 
       const reader =
         new FileReader();
 
-      reader.onload = function() {
 
-        resolve(
-          reader.result.split(",")[1]
-        );
+      reader.onload =
+        function() {
 
-      };
+          const result =
+            reader.result;
+
+
+          if (
+            typeof result !==
+            "string"
+          ) {
+
+            reject(
+              new Error(
+                "نەتوانرا وێنە بخوێندرێتەوە."
+              )
+            );
+
+            return;
+
+          }
+
+
+          const parts =
+            result.split(",");
+
+
+          if (
+            parts.length < 2
+          ) {
+
+            reject(
+              new Error(
+                "فۆرماتی وێنەکە نادروستە."
+              )
+            );
+
+            return;
+
+          }
+
+
+          resolve(
+            parts[1]
+          );
+
+        };
+
 
       reader.onerror =
-        reject;
+        function() {
 
-      reader.readAsDataURL(file);
+          reject(
+            new Error(
+              "نەتوانرا فایلەکە بخوێندرێتەوە."
+            )
+          );
+
+        };
+
+
+      reader.readAsDataURL(
+        file
+      );
 
     }
   );
@@ -957,37 +1654,67 @@ function fileToBase64(file) {
 
 async function sendMessage() {
 
-  const input =
-    document.getElementById("message");
+  if (isSending) {
+    return;
+  }
 
-  const button =
-    document.getElementById("send");
-
-  const chat =
-    document.getElementById("chat");
 
   const message =
     input.value.trim();
 
-  if (!message) return;
+
+  if (!message) {
+    return;
+  }
+
+
+  isSending =
+    true;
+
+
+  button.disabled =
+    true;
+
 
   const welcome =
-    document.getElementById("welcome");
+    document.getElementById(
+      "welcome"
+    );
+
 
   if (welcome) {
     welcome.remove();
   }
 
+
+  /*
+    پەیامی بەکارهێنەر
+    لە UI پیشان دەدەین.
+  */
+
   const userMessage =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   userMessage.className =
     "message user";
 
+
   userMessage.textContent =
     message;
 
-  chat.appendChild(userMessage);
+
+  chat.appendChild(
+    userMessage
+  );
+
+
+  /*
+    پەیامەکە زیاد دەکەین
+    بۆ history.
+  */
 
   messages.push({
 
@@ -997,144 +1724,170 @@ async function sendMessage() {
 
   });
 
-  input.value = "";
 
-  button.disabled = true;
+  saveMessages();
+
+
+  input.value =
+    "";
+
+
+  /*
+    Loading message
+  */
 
   const loading =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   loading.className =
     "message ai";
 
+
   loading.textContent =
-    "SamanAI  دەگەرێت... 🤔";
+    "SamanAI دەگەڕێت... 🤔";
 
-  chat.appendChild(loading);
 
-  chat.scrollTop =
-    chat.scrollHeight;
+  chat.appendChild(
+    loading
+  );
+
+
+  scrollChat();
+
+
+  status.textContent =
+    "SamanAI خەریکی وەڵامدانەوەیە...";
+
 
   try {
 
     const response =
-      await fetch("/api/chat", {
+      await fetch(
+        "/api/chat",
+        {
 
-        method: "POST",
+          method: "POST",
 
-        headers: {
+          headers: {
 
-          "Content-Type":
-            "application/json"
+            "Content-Type":
+              "application/json"
 
-        },
+          },
 
-        body: JSON.stringify({
+          body:
+            JSON.stringify({
 
-          messages: messages,
+              messages:
+                messages,
 
-          userId: userId
+              userId:
+                userId
 
-        })
+            })
 
-      });
+        }
+      );
 
-    const data =
-      await response.json();
+
+    let data;
+
+
+    try {
+
+      data =
+        await response.json();
+
+    } catch (jsonError) {
+
+      throw new Error(
+        "وەڵامی /api/chat ـەکە JSON نییە."
+      );
+
+    }
+
 
     if (!response.ok) {
 
-      loading.textContent =
+      throw new Error(
         data.error ||
-        "هەڵەیەک ڕوویدا.";
-
-    } else {
-
-      loading.textContent =
-        data.reply;
-
-      messages.push({
-
-        role: "assistant",
-
-        content: data.reply
-
-      });
-
-      speak(data.reply);
+        "API هەڵەیەکی گەڕاندەوە."
+      );
 
     }
+
+
+    const reply =
+      data.reply;
+
+
+    if (
+      typeof reply !==
+        "string" ||
+      !reply.trim()
+    ) {
+
+      throw new Error(
+        "SamanAI وەڵامێکی بەتاڵی گەڕاندەوە."
+      );
+
+    }
+
+
+    /*
+      وەڵامی AI زیاد دەکەین
+      بۆ conversation history.
+    */
+
+    messages.push({
+
+      role: "assistant",
+
+      content:
+        reply
+
+    });
+
+
+    saveMessages();
+
+
+    loading.textContent =
+      reply;
+
+
+    speak(reply);
+
+
+    status.textContent =
+      "SamanAI ئامادەیە ✅";
+
 
   } catch (error) {
 
-  console.error("SamanAI connection error:", error);
-
-  loading.textContent =
-    "هەڵەی پەیوەندی: " +
-    (error?.message || "هەڵەی نەناسراو");
-
-}
-
-  button.disabled = false;
-
-  input.focus();
-
-  chat.scrollTop =
-    chat.scrollHeight;
-
-}
+    console.error(
+      "SamanAI connection error:",
+      error
+    );
 
 
-/* =========================
-   SPEECH
-========================= */
+    /*
+      ئەگەر request شکست بهێنێت،
+      loading دەگۆڕین بۆ هەڵە.
+    */
 
-function speak(text) {
-
-  if (!("speechSynthesis" in window)) {
-    return;
-  }
-
-  window.speechSynthesis.cancel();
-
-  const speech =
-    new SpeechSynthesisUtterance(text);
-
-  speech.lang = "ku";
-
-  speech.rate = 0.95;
-
-  speech.pitch = 1;
-
-  window.speechSynthesis.speak(
-    speech
-  );
-
-}
+    loading.textContent =
+      "هەڵەی پەیوەندی: " +
+      (
+        error &&
+        error.message
+          ? error.message
+          : "هەڵەی نەناسراو"
+      );
 
 
-/* =========================
-   ENTER
-========================= */
-
-document
-  .getElementById("message")
-  .addEventListener(
-    "keydown",
-    function(event) {
-
-      if (event.key === "Enter") {
-
-        event.preventDefault();
-
-        sendMessage();
-
-      }
-
-    }
-  );
-
-</script>
-
-</body>
-</html>
+    status.textContent =
+      "پەیوەندی بە S
