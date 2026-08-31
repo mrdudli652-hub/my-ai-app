@@ -1,6 +1,12 @@
 import { neon } from "@neondatabase/serverless";
 
 export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      error: "Method not allowed"
+    });
+  }
+
   try {
     const { messages = [], userId: incomingUserId } = req.body || {};
 
@@ -14,14 +20,9 @@ export default async function handler(req, res) {
 
     const sql = neon(process.env.DATABASE_URL);
 
-    // هەمان User ID ـی پێشووتر، بۆ پاراستنی Memory ـەکانی کۆن
     const userId = String(
       incomingUserId || "samanai-user"
     ).trim();
-
-    // =====================================================
-    // 1. دڵنیابوون لە بوونی Memory table
-    // =====================================================
 
     await sql`
       CREATE TABLE IF NOT EXISTS public.memories (
@@ -32,49 +33,31 @@ export default async function handler(req, res) {
       )
     `;
 
-    // =====================================================
-    // 2. دوا نامەی بەکارهێنەر
-    // =====================================================
-
     const lastMessage =
       messages[messages.length - 1]?.content || "";
 
     const cleanMessage =
       String(lastMessage).trim();
 
-    // =====================================================
-    // 3. دۆزینەوەی ناو
-    // =====================================================
-
     let detectedName = null;
 
     const nameMatch = cleanMessage.match(
-      /(?:ناوم|ناوی من)\s+(?:ـ)?([^\s،,.!؟]+)/
+      /(?:ناوم|ناوی من)\s+(?:ـ)?([^\s،,.!؟]+)/ 
     );
 
     if (nameMatch) {
       detectedName = nameMatch[1]
         .replace(/[،,.!؟]+$/g, "")
-        .replace(/^(?:ـ)/, "");
+        .replace(/^ـ/, "");
 
       if (detectedName.endsWith("ە")) {
-        detectedName =
-          detectedName.slice(0, -1);
+        detectedName = detectedName.slice(0, -1);
       }
     }
 
-    // =====================================================
-    // 4. داواکاری Memory
-    // =====================================================
-
     const memoryRequest =
-      /لەبیرت بێت|لەبیرم بکە|بیرت بێت|لەبیرت نەچێت|تۆمار بکە|پاشەکەوتی بکە/i.test(
-        cleanMessage
-      );
-
-    // =====================================================
-    // 5. هەڵگرتنی ناو
-    // =====================================================
+      /لەبیرت بێت|لەبیرم بکە|بیرت بێت|لەبیرت نەچێت|تۆمار بکە|پاشەکەوتی بکە/i
+        .test(cleanMessage);
 
     if (detectedName) {
       const nameMemory =
@@ -97,10 +80,6 @@ export default async function handler(req, res) {
         `;
       }
     }
-
-    // =====================================================
-    // 6. هەڵگرتنی Memory ـی داواکراو
-    // =====================================================
 
     if (
       memoryRequest &&
@@ -125,10 +104,6 @@ export default async function handler(req, res) {
       }
     }
 
-    // =====================================================
-    // 7. خوێندنەوەی Memory
-    // =====================================================
-
     const memoryRows = await sql`
       SELECT memory
       FROM public.memories
@@ -136,18 +111,13 @@ export default async function handler(req, res) {
       ORDER BY created_at ASC
     `;
 
-    const memories =
-      memoryRows
-        .map((row) => row.memory)
-        .join("\n");
+    const memories = memoryRows
+      .map((row) => row.memory)
+      .join("\n");
 
     const memoryText =
       memories ||
       "هیچ Memory ـێک هێشتا تۆمار نەکراوە.";
-
-    // =====================================================
-    // 8. System Instruction
-    // =====================================================
 
     const systemPrompt = `
 تۆ SamanAI ـیت، یاریدەدەری زیرەکی بەکارهێنەر.
@@ -167,30 +137,77 @@ ${memoryText}
 7. هەموو وەڵامەکان بە کوردیی سۆرانی و سروشتی بن.
 `;
 
-    // =====================================================
-    // 9. گفتوگۆ
-    // =====================================================
-
-    const contents = messages.map((m) => ({
-      role:
-        m.role === "assistant"
+    const contents = messages
+      .filter((m) => m && m.content)
+      .map((m) => ({
+        role: m.role === "assistant"
           ? "assistant"
           : "user",
-
-      content: String(m.content || "")
-    }));
-
-    // =====================================================
-    // 10. OpenRouter
-    // =====================================================
+        content: String(m.content)
+      }));
 
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
       {
         method: "POST",
-
         headers: {
           "Content-Type": "application/json",
           "Authorization":
             `Bearer ${process.env.OPENROUTER_API_KEY}`,
-         
+          "HTTP-Referer":
+            "https://my-ai-i04dqhlm8-saman-aig.vercel.app/",
+          "X-Title": "SamanAI"
+        },
+        body: JSON.stringify({
+          model: "openrouter/free",
+          messages: [
+            {
+              role: "system",
+              content: systemPrompt
+            },
+            ...contents
+          },
+          temperature: 0.7,
+          max_tokens: 1200
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("OpenRouter error:", data);
+
+      return res.status(response.status).json({
+        error:
+          data?.error?.message ||
+          "AI request failed"
+      });
+    }
+
+    const reply =
+      data?.choices?.[0]?.message?.content;
+
+    if (!reply) {
+      console.error("Invalid AI response:", data);
+
+      return res.status(502).json({
+        error: "AI وەڵامێکی دروستی نەگەڕاندەوە."
+      });
+    }
+
+    return res.status(200).json({
+      reply: String(reply),
+      userId
+    });
+
+  } catch (error) {
+    console.error("SamanAI API error:", error);
+
+    return res.status(500).json({
+      error:
+        error?.message ||
+        "هەڵەیەکی نەخوازراو ڕوویدا."
+    });
+  }
+}
