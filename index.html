@@ -1008,7 +1008,7 @@ async function sendMessage() {
     "message ai";
 
   loading.textContent =
-    "SamanAI دەفکەرێت... 🤔";
+    "SamanAI  دەگەرێت... 🤔";
 
   chat.appendChild(loading);
 
@@ -1067,10 +1067,13 @@ async function sendMessage() {
 
   } catch (error) {
 
-    loading.textContent =
-      "پەیوەندی بە AI نەکرا.";
+  console.error("SamanAI connection error:", error);
 
-  }
+  loading.textContent =
+    "هەڵەی پەیوەندی: " +
+    (error?.message || "هەڵەی نەناسراو");
+
+}
 
   button.disabled = false;
 
