@@ -143,9 +143,19 @@ export default async function handler(req, res) {
       =========================
     */
 
-    const askingName =
-  /^(?:ناوی من چییە|ناوی من چیە|ناوم چییە|ناوم چیە|ناوی من دەزانیت|دەزانی ناوم چییە|دەزانی ناوم چیە)[؟?!.\s]*$/i
-    .test(cleanMessage);
+    const normalizedQuestion = cleanMessage
+  .replace(/[؟?!.,؛:]/g, "")
+  .replace(/[ـ]/g, "")
+  .replace(/\s+/g, "")
+  .trim();
+
+const askingName =
+  normalizedQuestion.includes("ناویمن") &&
+  (
+    normalizedQuestion.includes("چی") ||
+    normalizedQuestion.includes("دەزانیت") ||
+    normalizedQuestion.includes("دزانیت")
+  );
 
     if (askingName) {
       const nameRow = [...memoryRows]
