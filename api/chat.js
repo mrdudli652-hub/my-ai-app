@@ -160,14 +160,14 @@ ${memoryText}
         },
         body: JSON.stringify({
           model: "openrouter/free",
-          messages: [
-            {
-              role: "system",
-              content: systemPrompt
-            },
-            ...contents
-          },
-          temperature: 0.7,
+        messages: [
+  {
+    role: "system",
+    content: systemPrompt
+  },
+  ...contents
+],
+temperature: 0.7,
           max_tokens: 1200
         })
       }
