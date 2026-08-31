@@ -57,6 +57,11 @@
       transition: .25s;
     }
 
+    button,
+    input {
+      font-family: inherit;
+    }
+
     .app {
       width: 100%;
       max-width: 900px;
@@ -69,6 +74,10 @@
       background: var(--bg);
     }
 
+    /* =========================
+       HEADER
+    ========================= */
+
     header {
       flex-shrink: 0;
 
@@ -80,9 +89,7 @@
       justify-content: space-between;
 
       background: var(--card);
-
-      border-bottom:
-        1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
 
     .brand {
@@ -164,6 +171,10 @@
       cursor: pointer;
     }
 
+    /* =========================
+       CHAT
+    ========================= */
+
     #chat {
       flex: 1;
       min-height: 0;
@@ -184,8 +195,13 @@
       border-radius: 20px;
     }
 
+    /* =========================
+       WELCOME
+    ========================= */
+
     .welcome {
       height: 100%;
+      min-height: 0;
 
       display: flex;
       flex-direction: column;
@@ -232,13 +248,15 @@
       color: var(--muted);
 
       font-size: 14px;
-
       line-height: 1.8;
     }
 
+    /* =========================
+       MESSAGES
+    ========================= */
+
     .message {
       width: fit-content;
-
       max-width: 88%;
 
       padding: 12px 15px;
@@ -250,11 +268,9 @@
       line-height: 1.7;
 
       white-space: pre-wrap;
-
       word-break: break-word;
 
-      animation:
-        appear .2s ease;
+      animation: appear .2s ease;
     }
 
     @keyframes appear {
@@ -275,7 +291,6 @@
       margin-right: auto;
 
       background: var(--bubble-user);
-
       color: white;
 
       border-bottom-right-radius: 5px;
@@ -285,11 +300,9 @@
       margin-left: auto;
 
       background: var(--bubble-ai);
-
       color: var(--text);
 
-      border:
-        1px solid var(--border);
+      border: 1px solid var(--border);
 
       border-bottom-left-radius: 5px;
 
@@ -301,11 +314,14 @@
       display: block;
 
       max-width: 280px;
-
       width: 100%;
 
       border-radius: 14px;
     }
+
+    /* =========================
+       STATUS
+    ========================= */
 
     #status {
       flex-shrink: 0;
@@ -321,44 +337,40 @@
       padding: 3px;
     }
 
+    /* =========================
+       INPUT
+    ========================= */
+
     .input-area {
       flex-shrink: 0;
 
       padding: 9px 10px;
 
       padding-bottom:
-        calc(
-          9px +
-          env(safe-area-inset-bottom)
-        );
+        calc(9px + env(safe-area-inset-bottom));
 
       display: flex;
-
       align-items: center;
 
       gap: 7px;
 
       background: var(--card);
 
-      border-top:
-        1px solid var(--border);
+      border-top: 1px solid var(--border);
     }
 
     .input-box {
       flex: 1;
-
       min-width: 0;
 
       height: 50px;
 
       display: flex;
-
       align-items: center;
 
       background: var(--bg);
 
-      border:
-        1px solid var(--border);
+      border: 1px solid var(--border);
 
       border-radius: 17px;
 
@@ -367,7 +379,6 @@
 
     #message {
       flex: 1;
-
       min-width: 0;
 
       border: none;
@@ -436,37 +447,35 @@
 
     #send:disabled {
       opacity: .45;
-
       cursor: not-allowed;
     }
 
+    /* =========================
+       MICROPHONE
+    ========================= */
+
     #mic.recording {
       background: #dc2626;
-
       color: white;
 
-      animation:
-        pulse 1s infinite;
+      animation: pulse 1s infinite;
     }
 
     @keyframes pulse {
 
       0% {
         box-shadow:
-          0 0 0 0
-          rgba(220, 38, 38, .4);
+          0 0 0 0 rgba(220, 38, 38, .4);
       }
 
       70% {
         box-shadow:
-          0 0 0 10px
-          rgba(220, 38, 38, 0);
+          0 0 0 10px rgba(220, 38, 38, 0);
       }
 
       100% {
         box-shadow:
-          0 0 0 0
-          rgba(220, 38, 38, 0);
+          0 0 0 0 rgba(220, 38, 38, 0);
       }
 
     }
@@ -475,11 +484,14 @@
       display: none;
     }
 
+    /* =========================
+       MOBILE
+    ========================= */
+
     @media (max-width: 600px) {
 
       header {
         height: 66px;
-
         padding: 8px 10px;
       }
 
@@ -554,6 +566,10 @@
 
 <div class="app">
 
+  <!-- =========================
+       HEADER
+  ========================== -->
+
   <header>
 
     <div class="brand">
@@ -589,10 +605,8 @@
       <button
         id="themeBtn"
         type="button"
-        onclick="toggleTheme()">
-
+      >
         🌙
-
       </button>
 
     </div>
@@ -600,11 +614,16 @@
   </header>
 
 
+  <!-- =========================
+       CHAT
+  ========================== -->
+
   <div id="chat">
 
     <div
       class="welcome"
-      id="welcome">
+      id="welcome"
+    >
 
       <div class="welcome-logo">
         🤖
@@ -615,14 +634,9 @@
       </h2>
 
       <p>
-
         من ئامادەم بۆ گفتوگۆ ❤️
-
         <br>
-
-        بنووسە، قسە بکە،
-        یان وێنەیەک بنێرە.
-
+        بنووسە، قسە بکە، یان وێنەیەک بنێرە.
       </p>
 
     </div>
@@ -633,20 +647,20 @@
   <div id="status"></div>
 
 
+  <!-- =========================
+       INPUT AREA
+  ========================== -->
+
   <div class="input-area">
+
 
     <button
       class="icon-btn"
       id="imageBtn"
       type="button"
-      onclick="
-        document
-          .getElementById('imageInput')
-          .click()
-      ">
-
+      title="ناردنی وێنە"
+    >
       📷
-
     </button>
 
 
@@ -671,10 +685,9 @@
         class="icon-btn"
         id="mic"
         type="button"
-        onclick="startVoice()">
-
+        title="دەنگ"
+      >
         🎙️
-
       </button>
 
     </div>
@@ -683,10 +696,9 @@
     <button
       id="send"
       type="button"
-      onclick="sendMessage()">
-
+      title="ناردن"
+    >
       ➤
-
     </button>
 
   </div>
@@ -696,8 +708,11 @@
 
 <script>
 
+"use strict";
+
+
 /* =========================
-   STATE
+   GLOBAL VARIABLES
 ========================= */
 
 let messages = [];
@@ -705,9 +720,6 @@ let messages = [];
 let recognition = null;
 
 let isSending = false;
-
-const MESSAGE_STORAGE_KEY =
-  "samanai-messages";
 
 
 /* =========================
@@ -755,256 +767,45 @@ function getUserId() {
 
 
   return userId;
+
 }
 
 
-const userId =
-  getUserId();
+const userId = getUserId();
 
 
 /* =========================
    ELEMENTS
 ========================= */
 
-const input =
-  document.getElementById(
-    "message"
-  );
-
-const button =
-  document.getElementById(
-    "send"
-  );
-
 const chat =
-  document.getElementById(
-    "chat"
-  );
+  document.getElementById("chat");
 
-const status =
-  document.getElementById(
-    "status"
-  );
+const input =
+  document.getElementById("message");
 
-const mic =
-  document.getElementById(
-    "mic"
-  );
+const sendButton =
+  document.getElementById("send");
+
+const micButton =
+  document.getElementById("mic");
+
+const imageButton =
+  document.getElementById("imageBtn");
 
 const imageInput =
-  document.getElementById(
-    "imageInput"
-  );
+  document.getElementById("imageInput");
 
+const statusElement =
+  document.getElementById("status");
 
-/* =========================
-   STORAGE
-========================= */
-
-function saveMessages() {
-
-  try {
-
-    /*
-      تەنها 50 پەیامی کۆتایی
-      هەڵدەگرین بۆ ئەوەی
-      request ـەکان زۆر گەورە نەبن.
-    */
-
-    const recent =
-      messages.slice(-50);
-
-    localStorage.setItem(
-      MESSAGE_STORAGE_KEY,
-      JSON.stringify(recent)
-    );
-
-  } catch (error) {
-
-    console.error(
-      "Cannot save messages:",
-      error
-    );
-
-  }
-
-}
-
-
-function loadMessages() {
-
-  try {
-
-    const saved =
-      localStorage.getItem(
-        MESSAGE_STORAGE_KEY
-      );
-
-    if (!saved) {
-      return;
-    }
-
-    const parsed =
-      JSON.parse(saved);
-
-    if (!Array.isArray(parsed)) {
-      return;
-    }
-
-    messages =
-      parsed.filter(function(item) {
-
-        return (
-          item &&
-          typeof item.role ===
-            "string" &&
-          typeof item.content ===
-            "string"
-        );
-
-      });
-
-  } catch (error) {
-
-    console.error(
-      "Cannot load messages:",
-      error
-    );
-
-    messages = [];
-
-  }
-
-}
-
-
-/* =========================
-   RENDER HISTORY
-========================= */
-
-function renderMessages() {
-
-  /*
-    پاککردنەوەی چات بۆ
-    دروستکردنەوەی history.
-  */
-
-  chat.innerHTML = "";
-
-
-  if (messages.length === 0) {
-
-    const welcome =
-      document.createElement(
-        "div"
-      );
-
-    welcome.className =
-      "welcome";
-
-    welcome.id =
-      "welcome";
-
-    welcome.innerHTML = `
-      <div class="welcome-logo">
-        🤖
-      </div>
-
-      <h2>
-        بەخێربێیت بۆ SamanAI
-      </h2>
-
-      <p>
-        من ئامادەم بۆ گفتوگۆ ❤️
-        <br>
-        بنووسە، قسە بکە،
-        یان وێنەیەک بنێرە.
-      </p>
-    `;
-
-    chat.appendChild(
-      welcome
-    );
-
-    return;
-  }
-
-
-  messages.forEach(
-    function(item) {
-
-      const div =
-        document.createElement(
-          "div"
-        );
-
-      div.className =
-        item.role === "user"
-          ? "message user"
-          : "message ai";
-
-      div.textContent =
-        item.content;
-
-      chat.appendChild(
-        div
-      );
-
-    }
-  );
-
-
-  scrollChat();
-
-}
-
-
-/* =========================
-   SCROLL
-========================= */
-
-function scrollChat() {
-
-  chat.scrollTop =
-    chat.scrollHeight;
-
-}
+const themeButton =
+  document.getElementById("themeBtn");
 
 
 /* =========================
    THEME
 ========================= */
-
-function toggleTheme() {
-
-  document.body.classList.toggle(
-    "dark"
-  );
-
-
-  const dark =
-    document.body.classList.contains(
-      "dark"
-    );
-
-
-  document.getElementById(
-    "themeBtn"
-  ).textContent =
-    dark
-      ? "☀️"
-      : "🌙";
-
-
-  localStorage.setItem(
-    "samanai-theme",
-    dark
-      ? "dark"
-      : "light"
-  );
-
-}
-
 
 function loadTheme() {
 
@@ -1020,34 +821,121 @@ function loadTheme() {
       "dark"
     );
 
-    document.getElementById(
-      "themeBtn"
-    ).textContent =
+    themeButton.textContent =
       "☀️";
+
+  } else {
+
+    themeButton.textContent =
+      "🌙";
 
   }
 
 }
 
 
+function toggleTheme() {
+
+  document.body.classList.toggle(
+    "dark"
+  );
+
+
+  const dark =
+    document.body.classList.contains(
+      "dark"
+    );
+
+
+  themeButton.textContent =
+    dark
+      ? "☀️"
+      : "🌙";
+
+
+  localStorage.setItem(
+    "samanai-theme",
+    dark
+      ? "dark"
+      : "light"
+  );
+
+}
+
+
+themeButton.addEventListener(
+  "click",
+  toggleTheme
+);
+
+
+loadTheme();
+
+
 /* =========================
-   TEXT TO SPEECH
+   WELCOME
+========================= */
+
+function removeWelcome() {
+
+  const welcome =
+    document.getElementById(
+      "welcome"
+    );
+
+
+  if (welcome) {
+    welcome.remove();
+  }
+
+}
+
+
+/* =========================
+   ADD MESSAGE
+========================= */
+
+function addMessage(
+  text,
+  type
+) {
+
+  const element =
+    document.createElement("div");
+
+
+  element.className =
+    "message " + type;
+
+
+  element.textContent =
+    text;
+
+
+  chat.appendChild(
+    element
+  );
+
+
+  chat.scrollTop =
+    chat.scrollHeight;
+
+
+  return element;
+
+}
+
+
+/* =========================
+   SPEECH
 ========================= */
 
 function speak(text) {
 
-  /*
-    ئەگەر Browser ـەکە
-    speechSynthesis پشتگیری نەکات
-    هیچ هەڵەیەک دروست ناکات.
-  */
-
   if (
     !("speechSynthesis" in window)
   ) {
-
     return;
-
   }
 
 
@@ -1067,57 +955,25 @@ function speak(text) {
       );
 
 
-    /*
-      Kurdish ـە.
-      هەموو مۆبایلێک voice ـی
-      کوردی نییە، بۆیە browser
-      خۆی نزیکترین voice بەکاردهێنێت.
-    */
-
     utterance.lang =
       "ku-IQ";
 
+
     utterance.rate =
       0.95;
+
 
     utterance.pitch =
       1;
 
 
-    const voices =
-      window.speechSynthesis
-        .getVoices();
-
-
-    const kurdishVoice =
-      voices.find(
-        function(voice) {
-
-          return (
-            voice.lang &&
-            voice.lang
-              .toLowerCase()
-              .startsWith("ku")
-          );
-
-        }
-      );
-
-
-    if (kurdishVoice) {
-
-      utterance.voice =
-        kurdishVoice;
-
-    }
-
-
-    window.speechSynthesis
-      .speak(utterance);
+    window.speechSynthesis.speak(
+      utterance
+    );
 
   } catch (error) {
 
-    console.error(
+    console.log(
       "Speech error:",
       error
     );
@@ -1154,22 +1010,26 @@ if (SpeechRecognition) {
     false;
 
 
-  recognition.onstart =
-    function() {
+  recognition.maxAlternatives =
+    1;
 
-      mic.classList.add(
+
+  recognition.onstart =
+    function () {
+
+      micButton.classList.add(
         "recording"
       );
 
 
-      status.textContent =
+      statusElement.textContent =
         "🎙️ گوێم لێتە...";
 
     };
 
 
   recognition.onresult =
-    function(event) {
+    function (event) {
 
       let text =
         event
@@ -1201,14 +1061,9 @@ if (SpeechRecognition) {
         text;
 
 
-      status.textContent =
+      statusElement.textContent =
         "دەنگەکە وەرگیرا 🎤";
 
-
-      /*
-        دوای وەرگرتنی دەنگ،
-        خۆکارانە دەنێرین.
-      */
 
       sendMessage();
 
@@ -1216,18 +1071,24 @@ if (SpeechRecognition) {
 
 
   recognition.onerror =
-    function() {
+    function (event) {
 
-      status.textContent =
+      console.log(
+        "Speech recognition error:",
+        event
+      );
+
+
+      statusElement.textContent =
         "نەتوانرا دەنگ وەرگیرێت.";
 
     };
 
 
   recognition.onend =
-    function() {
+    function () {
 
-      mic.classList.remove(
+      micButton.classList.remove(
         "recording"
       );
 
@@ -1253,11 +1114,6 @@ function startVoice() {
   }
 
 
-  if (isSending) {
-    return;
-  }
-
-
   try {
 
     recognition.start();
@@ -1265,7 +1121,7 @@ function startVoice() {
   } catch (error) {
 
     console.log(
-      "Voice already running:",
+      "Recognition start:",
       error
     );
 
@@ -1274,8 +1130,101 @@ function startVoice() {
 }
 
 
+micButton.addEventListener(
+  "click",
+  startVoice
+);
+
+
 /* =========================
-   IMAGE
+   FILE TO BASE64
+========================= */
+
+function fileToBase64(file) {
+
+  return new Promise(
+    function (resolve, reject) {
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload =
+        function () {
+
+          const result =
+            String(
+              reader.result || ""
+            );
+
+
+          const commaIndex =
+            result.indexOf(",");
+
+
+          if (
+            commaIndex === -1
+          ) {
+
+            reject(
+              new Error(
+                "Invalid image data"
+              )
+            );
+
+            return;
+
+          }
+
+
+          resolve(
+            result.slice(
+              commaIndex + 1
+            )
+          );
+
+        };
+
+
+      reader.onerror =
+        function () {
+
+          reject(
+            reader.error ||
+            new Error(
+              "FileReader error"
+            )
+          );
+
+        };
+
+
+      reader.readAsDataURL(
+        file
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================
+   IMAGE BUTTON
+========================= */
+
+imageButton.addEventListener(
+  "click",
+  function () {
+
+    imageInput.click();
+
+  }
+);
+
+
+/* =========================
+   HANDLE IMAGE
 ========================= */
 
 imageInput.addEventListener(
@@ -1287,6 +1236,7 @@ imageInput.addEventListener(
 async function handleImage(event) {
 
   const file =
+    event.target.files &&
     event.target.files[0];
 
 
@@ -1295,43 +1245,11 @@ async function handleImage(event) {
   }
 
 
-  /*
-    سنووری پاراستن.
-    وێنەی زۆر گەورە request ـەکە
-    قورس دەکات.
-  */
-
-  if (
-    file.size >
-    10 * 1024 * 1024
-  ) {
-
-    status.textContent =
-      "وێنەکە زۆر گەورەیە. تکایە وێنەیەکی کەمتر لە 10MB هەڵبژێرە.";
-
-    event.target.value =
-      "";
-
-    return;
-
-  }
-
-
-  const welcome =
-    document.getElementById(
-      "welcome"
-    );
-
-
-  if (welcome) {
-    welcome.remove();
-  }
+  removeWelcome();
 
 
   const imageMessage =
-    document.createElement(
-      "div"
-    );
+    document.createElement("div");
 
 
   imageMessage.className =
@@ -1339,9 +1257,7 @@ async function handleImage(event) {
 
 
   const image =
-    document.createElement(
-      "img"
-    );
+    document.createElement("img");
 
 
   image.src =
@@ -1351,7 +1267,7 @@ async function handleImage(event) {
 
 
   image.alt =
-    "وێنەی بەکارهێنەر";
+    "وێنەی نێردراو";
 
 
   imageMessage.appendChild(
@@ -1364,11 +1280,16 @@ async function handleImage(event) {
   );
 
 
-  scrollChat();
+  chat.scrollTop =
+    chat.scrollHeight;
 
 
-  status.textContent =
-    "وێنەکە دەنێردرێت...";
+  statusElement.textContent =
+    "وێنەکە دەنێردرێت... 📷";
+
+
+  imageButton.disabled =
+    true;
 
 
   try {
@@ -1387,10 +1308,8 @@ async function handleImage(event) {
           method: "POST",
 
           headers: {
-
             "Content-Type":
               "application/json"
-
           },
 
           body:
@@ -1414,18 +1333,24 @@ async function handleImage(event) {
       );
 
 
+    const responseText =
+      await response.text();
+
+
     let data;
 
 
     try {
 
       data =
-        await response.json();
+        JSON.parse(
+          responseText
+        );
 
-    } catch (jsonError) {
+    } catch (parseError) {
 
       throw new Error(
-        "وەڵامی API ـەکە JSON نییە."
+        "وەڵامی API نادروستە."
       );
 
     }
@@ -1442,23 +1367,27 @@ async function handleImage(event) {
 
 
     const reply =
-      data.reply;
+      typeof data.reply ===
+        "string"
+        ? data.reply.trim()
+        : "";
 
 
     if (!reply) {
 
       throw new Error(
-        data.error ||
-        "SamanAI وەڵامێکی نەگەڕاندەوە."
+        "AI وەڵامێکی بەتاڵی دا."
       );
 
     }
 
 
-    /*
-      وێنەکە وەک بەشێک لە
-      history تۆمار دەکەین.
-    */
+    const replyElement =
+      addMessage(
+        reply,
+        "ai"
+      );
+
 
     messages.push({
 
@@ -1475,7 +1404,7 @@ async function handleImage(event) {
       role: "assistant",
 
       content:
-        String(reply)
+        reply
 
     });
 
@@ -1483,167 +1412,47 @@ async function handleImage(event) {
     saveMessages();
 
 
-    const replyMessage =
-      document.createElement(
-        "div"
-      );
-
-
-    replyMessage.className =
-      "message ai";
-
-
-    replyMessage.textContent =
-      String(reply);
-
-
-    chat.appendChild(
-      replyMessage
-    );
+    statusElement.textContent =
+      "";
 
 
     speak(reply);
 
 
-    status.textContent =
-      "وێنەکە پشکنرا ✅";
-
-
   } catch (error) {
 
     console.error(
-      "SamanAI image error:",
+      "Image error:",
       error
     );
 
 
-    const errorMessage =
-      document.createElement(
-        "div"
-      );
-
-
-    errorMessage.className =
-      "message ai";
-
-
-    errorMessage.textContent =
-      "هەڵەی ناردنی وێنە: " +
+    addMessage(
+      "هەڵە لە ناردنی وێنە: " +
       (
-        error &&
-        error.message
-          ? error.message
-          : "هەڵەی نەناسراو"
-      );
-
-
-    chat.appendChild(
-      errorMessage
+        error?.message ||
+        "هەڵەی نەناسراو"
+      ),
+      "ai"
     );
 
 
-    status.textContent =
-      "ناردنی وێنە سەرکەوتوو نەبوو.";
-
+    statusElement.textContent =
+      "";
 
   } finally {
 
-    URL.revokeObjectURL(
-      image.src
-    );
+    imageButton.disabled =
+      false;
 
 
-    event.target.value =
+    imageInput.value =
       "";
 
-
-    scrollChat();
+    chat.scrollTop =
+      chat.scrollHeight;
 
   }
-
-}
-
-
-/* =========================
-   FILE TO BASE64
-========================= */
-
-function fileToBase64(file) {
-
-  return new Promise(
-    function(resolve, reject) {
-
-      const reader =
-        new FileReader();
-
-
-      reader.onload =
-        function() {
-
-          const result =
-            reader.result;
-
-
-          if (
-            typeof result !==
-            "string"
-          ) {
-
-            reject(
-              new Error(
-                "نەتوانرا وێنە بخوێندرێتەوە."
-              )
-            );
-
-            return;
-
-          }
-
-
-          const parts =
-            result.split(",");
-
-
-          if (
-            parts.length < 2
-          ) {
-
-            reject(
-              new Error(
-                "فۆرماتی وێنەکە نادروستە."
-              )
-            );
-
-            return;
-
-          }
-
-
-          resolve(
-            parts[1]
-          );
-
-        };
-
-
-      reader.onerror =
-        function() {
-
-          reject(
-            new Error(
-              "نەتوانرا فایلەکە بخوێندرێتەوە."
-            )
-          );
-
-        };
-
-
-      reader.readAsDataURL(
-        file
-      );
-
-    }
-  );
 
 }
 
@@ -1672,55 +1481,21 @@ async function sendMessage() {
     true;
 
 
-  button.disabled =
-    true;
+  removeWelcome();
 
 
-  const welcome =
-    document.getElementById(
-      "welcome"
-    );
-
-
-  if (welcome) {
-    welcome.remove();
-  }
-
-
-  /*
-    پەیامی بەکارهێنەر
-    لە UI پیشان دەدەین.
-  */
-
-  const userMessage =
-    document.createElement(
-      "div"
-    );
-
-
-  userMessage.className =
-    "message user";
-
-
-  userMessage.textContent =
-    message;
-
-
-  chat.appendChild(
-    userMessage
+  addMessage(
+    message,
+    "user"
   );
 
-
-  /*
-    پەیامەکە زیاد دەکەین
-    بۆ history.
-  */
 
   messages.push({
 
     role: "user",
 
-    content: message
+    content:
+      message
 
   });
 
@@ -1732,34 +1507,27 @@ async function sendMessage() {
     "";
 
 
-  /*
-    Loading message
-  */
+  sendButton.disabled =
+    true;
+
+
+  micButton.disabled =
+    true;
+
+
+  imageButton.disabled =
+    true;
+
 
   const loading =
-    document.createElement(
-      "div"
+    addMessage(
+      "SamanAI دەگەرێت... 🤔",
+      "ai"
     );
 
 
-  loading.className =
-    "message ai";
-
-
-  loading.textContent =
-    "SamanAI دەگەڕێت... 🤔";
-
-
-  chat.appendChild(
-    loading
-  );
-
-
-  scrollChat();
-
-
-  status.textContent =
-    "SamanAI خەریکی وەڵامدانەوەیە...";
+  statusElement.textContent =
+    "پەیوەندی بە AI...";
 
 
   try {
@@ -1793,18 +1561,24 @@ async function sendMessage() {
       );
 
 
+    const responseText =
+      await response.text();
+
+
     let data;
 
 
     try {
 
       data =
-        await response.json();
+        JSON.parse(
+          responseText
+        );
 
-    } catch (jsonError) {
+    } catch (parseError) {
 
       throw new Error(
-        "وەڵامی /api/chat ـەکە JSON نییە."
+        "وەڵامی API نادروستە."
       );
 
     }
@@ -1814,37 +1588,36 @@ async function sendMessage() {
 
       throw new Error(
         data.error ||
-        "API هەڵەیەکی گەڕاندەوە."
+        "کێشەیەک لە پەیوەندی بە AI ڕوویدا."
       );
 
     }
 
 
     const reply =
-      data.reply;
+      typeof data.reply ===
+        "string"
+        ? data.reply.trim()
+        : "";
 
 
-    if (
-      typeof reply !==
-        "string" ||
-      !reply.trim()
-    ) {
+    if (!reply) {
 
       throw new Error(
-        "SamanAI وەڵامێکی بەتاڵی گەڕاندەوە."
+        "AI وەڵامێکی بەتاڵی گەڕاندەوە."
       );
 
     }
 
 
-    /*
-      وەڵامی AI زیاد دەکەین
-      بۆ conversation history.
-    */
+    loading.textContent =
+      reply;
+
 
     messages.push({
 
-      role: "assistant",
+      role:
+        "assistant",
 
       content:
         reply
@@ -1855,15 +1628,11 @@ async function sendMessage() {
     saveMessages();
 
 
-    loading.textContent =
-      reply;
+    statusElement.textContent =
+      "";
 
 
     speak(reply);
-
-
-    status.textContent =
-      "SamanAI ئامادەیە ✅";
 
 
   } catch (error) {
@@ -1874,20 +1643,200 @@ async function sendMessage() {
     );
 
 
-    /*
-      ئەگەر request شکست بهێنێت،
-      loading دەگۆڕین بۆ هەڵە.
-    */
-
     loading.textContent =
       "هەڵەی پەیوەندی: " +
       (
-        error &&
-        error.message
-          ? error.message
-          : "هەڵەی نەناسراو"
+        error?.message ||
+        "هەڵەی نەناسراو"
       );
 
 
-    status.textContent =
-      "پەیوەندی بە S
+    statusElement.textContent =
+      "";
+
+  } finally {
+
+    isSending =
+      false;
+
+
+    sendButton.disabled =
+      false;
+
+
+    micButton.disabled =
+      false;
+
+
+    imageButton.disabled =
+      false;
+
+
+    input.focus();
+
+
+    chat.scrollTop =
+      chat.scrollHeight;
+
+  }
+
+}
+
+
+/* =========================
+   SEND BUTTON
+========================= */
+
+sendButton.addEventListener(
+  "click",
+  sendMessage
+);
+
+
+/* =========================
+   ENTER TO SEND
+========================= */
+
+input.addEventListener(
+  "keydown",
+  function (event) {
+
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey
+    ) {
+
+      event.preventDefault();
+
+      sendMessage();
+
+    }
+
+  }
+);
+
+
+/* =========================
+   LOCAL CHAT HISTORY
+========================= */
+
+function saveMessages() {
+
+  try {
+
+    localStorage.setItem(
+      "samanai-chat-history",
+      JSON.stringify(
+        messages
+      )
+    );
+
+  } catch (error) {
+
+    console.log(
+      "Could not save chat:",
+      error
+    );
+
+  }
+
+}
+
+
+function loadMessages() {
+
+  try {
+
+    const saved =
+      localStorage.getItem(
+        "samanai-chat-history"
+      );
+
+
+    if (!saved) {
+      return;
+    }
+
+
+    const parsed =
+      JSON.parse(
+        saved
+      );
+
+
+    if (
+      !Array.isArray(parsed)
+    ) {
+      return;
+    }
+
+
+    messages =
+      parsed.filter(
+        function (item) {
+
+          return (
+            item &&
+            (
+              item.role ===
+                "user" ||
+              item.role ===
+                "assistant"
+            ) &&
+            typeof item.content ===
+              "string"
+          );
+
+        }
+      );
+
+
+    if (
+      messages.length === 0
+    ) {
+      return;
+    }
+
+
+    removeWelcome();
+
+
+    for (
+      const item of messages
+    ) {
+
+      addMessage(
+        item.content,
+        item.role ===
+          "user"
+          ? "user"
+          : "ai"
+      );
+
+    }
+
+  } catch (error) {
+
+    console.log(
+      "Could not load chat:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadMessages();
+
+
+input.focus();
+
+</script>
+
+</body>
+</html>
