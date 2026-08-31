@@ -144,15 +144,17 @@ export default async function handler(req, res) {
     */
 
     const askingName =
-      /^(?:ناوی من چییە|ناوم چییە|ناوی من دەزانیت|دەزانی ناوم چییە)[؟?!.\s]*$/i
-        .test(cleanMessage);
+  /^(?:ناوی من چییە|ناوی من چیە|ناوم چییە|ناوم چیە|ناوی من دەزانیت|دەزانی ناوم چییە|دەزانی ناوم چیە)[؟?!.\s]*$/i
+    .test(cleanMessage);
 
     if (askingName) {
-      const nameRow = memoryRows.find(
-        (row) =>
-          String(row.memory)
-            .startsWith("ناوی بەکارهێنەر:")
-      );
+      const nameRow = [...memoryRows]
+  .reverse()
+  .find(
+    (row) =>
+      String(row.memory)
+        .startsWith("ناوی بەکارهێنەر:")
+  );
 
       if (nameRow) {
         const name = String(nameRow.memory)
