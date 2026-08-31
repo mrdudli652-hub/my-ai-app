@@ -1,201 +1,333 @@
 import { neon } from "@neondatabase/serverless";
 
 export default async function handler(req, res) {
+
+  /* =========================
+     METHOD
+  ========================= */
+
   if (req.method !== "POST") {
+
     return res.status(405).json({
       error: "Method not allowed"
     });
+
   }
 
+
   try {
+
+    /* =========================
+       REQUEST DATA
+    ========================= */
+
     const {
       messages = [],
-      userId: incomingUserId
+      userId: incomingUserId,
+      image = null,
+      imageType = null
     } = req.body || {};
 
+
+    /* =========================
+       ENVIRONMENT
+    ========================= */
+
     if (!process.env.DATABASE_URL) {
-      throw new Error("DATABASE_URL is missing");
+
+      throw new Error(
+        "DATABASE_URL is missing"
+      );
+
     }
+
 
     if (!process.env.OPENROUTER_API_KEY) {
-      throw new Error("OPENROUTER_API_KEY is missing");
+
+      throw new Error(
+        "OPENROUTER_API_KEY is missing"
+      );
+
     }
 
-    const sql = neon(process.env.DATABASE_URL);
 
-    const userId = String(
-      incomingUserId || "samanai-user"
-    ).trim();
+    /* =========================
+       DATABASE
+    ========================= */
 
-    await sql`
-      CREATE TABLE IF NOT EXISTS public.memories (
-        id SERIAL PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        memory TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `;
+    const sql =
+      neon(process.env.DATABASE_URL);
+
+
+    const userId =
+      String(
+        incomingUserId ||
+        "samanai-user"
+      ).trim();
+
+
+    /* =========================
+       MEMORY
+    ========================= */
 
     const lastMessage =
-      messages[messages.length - 1]?.content || "";
+      messages.length > 0
+        ? messages[messages.length - 1]
+        : null;
+
+
+    const lastContent =
+      lastMessage?.content || "";
+
 
     const cleanMessage =
-      String(lastMessage).trim();
+      typeof lastContent === "string"
+        ? lastContent.trim()
+        : "";
 
-    /*
-      =========================
-      MEMORY: ناوی بەکارهێنەر
-      =========================
-    */
+
+    /* =========================
+       MEMORY:
+       USER NAME
+    ========================= */
 
     let detectedName = null;
 
-    const nameMatch = cleanMessage.match(
-      /(?:ناوم|ناوی من)\s+(?:ـ)?([^\s،,.!؟]+)/
-    );
+
+    const nameMatch =
+      cleanMessage.match(
+        /(?:ناوم|ناوی من)\s+(?:ـ)?([^\s،,.!؟]+)/
+      );
+
 
     if (nameMatch) {
-      detectedName = nameMatch[1]
-        .replace(/[،,.!؟]+$/g, "")
-        .replace(/^ـ/, "");
 
-      if (detectedName.endsWith("ە")) {
+      detectedName =
+        nameMatch[1]
+          .replace(
+            /[،,.!؟]+$/g,
+            ""
+          )
+          .replace(
+            /^ـ/,
+            ""
+          )
+          .trim();
+
+
+      if (
+        detectedName.endsWith("ە")
+      ) {
+
         detectedName =
-          detectedName.slice(0, -1);
+          detectedName.slice(
+            0,
+            -1
+          );
+
       }
+
     }
 
+
+    /* =========================
+       SAVE USER NAME
+    ========================= */
+
     if (detectedName) {
+
       const nameMemory =
         `ناوی بەکارهێنەر: ${detectedName}`;
 
-      const existingName = await sql`
-        SELECT id
-        FROM public.memories
-        WHERE user_id = ${userId}
-          AND memory = ${nameMemory}
-        LIMIT 1
-      `;
 
-      if (existingName.length === 0) {
+      const existingName =
+        await sql`
+          SELECT id
+          FROM public.memories
+          WHERE user_id = ${userId}
+            AND memory = ${nameMemory}
+          LIMIT 1
+        `;
+
+
+      if (
+        existingName.length === 0
+      ) {
+
         await sql`
           INSERT INTO public.memories
             (user_id, memory)
           VALUES
             (${userId}, ${nameMemory})
         `;
+
       }
+
     }
 
-    /*
-      =========================
-      MEMORY: داواکارییەکانی لەبیرکردن
-      =========================
-    */
+
+    /* =========================
+       MEMORY:
+       SAVE USER REQUEST
+    ========================= */
 
     const memoryRequest =
       /لەبیرت بێت|لەبیرم بکە|بیرت بێت|لەبیرت نەچێت|تۆمار بکە|پاشەکەوتی بکە/i
         .test(cleanMessage);
+
 
     if (
       memoryRequest &&
       cleanMessage &&
       !detectedName
     ) {
-      const existingMemory = await sql`
-        SELECT id
-        FROM public.memories
-        WHERE user_id = ${userId}
-          AND memory = ${cleanMessage}
-        LIMIT 1
-      `;
 
-      if (existingMemory.length === 0) {
+      const existingMemory =
+        await sql`
+          SELECT id
+          FROM public.memories
+          WHERE user_id = ${userId}
+            AND memory = ${cleanMessage}
+          LIMIT 1
+        `;
+
+
+      if (
+        existingMemory.length === 0
+      ) {
+
         await sql`
           INSERT INTO public.memories
             (user_id, memory)
           VALUES
             (${userId}, ${cleanMessage})
         `;
+
       }
+
     }
 
-    /*
-      =========================
-      MEMORY: خوێندنەوە
-      =========================
-    */
 
-    const memoryRows = await sql`
-      SELECT memory
-      FROM public.memories
-      WHERE user_id = ${userId}
-      ORDER BY created_at ASC
-    `;
+    /* =========================
+       READ MEMORY
+    ========================= */
 
-    const memories = memoryRows
-      .map((row) => row.memory)
-      .join("\n");
+    const memoryRows =
+      await sql`
+        SELECT memory
+        FROM public.memories
+        WHERE user_id = ${userId}
+        ORDER BY created_at ASC
+      `;
 
-    /*
-      =========================
-      پرسیاری ڕاستەوخۆی ناو
-      =========================
-    */
 
-    const normalizedQuestion = cleanMessage
-  .replace(/[؟?!.,؛:]/g, "")
-  .replace(/[ـ]/g, "")
-  .replace(/\s+/g, "")
-  .trim();
+    const memories =
+      memoryRows
+        .map(
+          (row) => row.memory
+        )
+        .join("\n");
 
-const askingName =
-  normalizedQuestion.includes("ناویمن") &&
-  (
-    normalizedQuestion.includes("چی") ||
-    normalizedQuestion.includes("دەزانیت") ||
-    normalizedQuestion.includes("دزانیت")
-  );
+
+    /* =========================
+       ASKING USER NAME
+    ========================= */
+
+    const normalizedQuestion =
+      cleanMessage
+        .replace(
+          /[؟?!.,؛:]/g,
+          ""
+        )
+        .replace(
+          /[ـ]/g,
+          ""
+        )
+        .replace(
+          /\s+/g,
+          ""
+        )
+        .trim();
+
+
+    const askingName =
+      normalizedQuestion.includes(
+        "ناویمن"
+      ) &&
+      (
+        normalizedQuestion.includes(
+          "چی"
+        ) ||
+        normalizedQuestion.includes(
+          "دەزانیت"
+        ) ||
+        normalizedQuestion.includes(
+          "دزانیت"
+        )
+      );
+
 
     if (askingName) {
-      const nameRow = [...memoryRows]
-  .reverse()
-  .find(
-    (row) =>
-      String(row.memory)
-        .startsWith("ناوی بەکارهێنەر:")
-  );
+
+      const nameRow =
+        [...memoryRows]
+          .reverse()
+          .find(
+            (row) =>
+              String(row.memory)
+                .startsWith(
+                  "ناوی بەکارهێنەر:"
+                )
+          );
+
 
       if (nameRow) {
-        const name = String(nameRow.memory)
-          .replace("ناوی بەکارهێنەر:", "")
-          .trim();
+
+        const name =
+          String(
+            nameRow.memory
+          )
+            .replace(
+              "ناوی بەکارهێنەر:",
+              ""
+            )
+            .trim();
+
 
         return res.status(200).json({
-          reply: `ناوت ${name} ـە ❤️`,
+
+          reply:
+            `ناوت ${name} ـە ❤️`,
+
           userId
+
         });
+
       }
 
+
       return res.status(200).json({
+
         reply:
           "هێشتا ناوت لەبیرگەمدا نییە.",
+
         userId
+
       });
+
     }
 
-    /*
-      =========================
-      SYSTEM PROMPT
-      =========================
-    */
+
+    /* =========================
+       SYSTEM PROMPT
+    ========================= */
 
     const systemPrompt = `
 تۆ SamanAI ـیت، یاریدەدەری زیرەکی بەکارهێنەر.
 
 هەموو وەڵامەکانت بە کوردیی سۆرانی بن.
 
-Memory ـەکانی بەکارهێنەر لە خوارەوەن:
+Memory ـەکانی ئەم بەکارهێنەرە:
 
 ${memories || "هیچ Memory ـێک نییە."}
 
@@ -208,143 +340,302 @@ ${memories || "هیچ Memory ـێک نییە."}
 5. ئەگەر پرسیاری ناوی کرد، وەڵامێکی کورت و سروشتی بدە.
 6. Memory ـی بەکارهێنەرێکی تر بەکارمەهێنە.
 7. ئەگەر Memory پەیوەندیدار نییە، باسی مەکە.
+8. ئەگەر وێنەیەک نێردرا، بە وردی وێنەکە بخوێنەوە و بە کوردیی سۆرانی وەڵام بدە.
+9. ئەگەر لە وێنەکەدا دەق هەیە، هەوڵ بدە دەقەکە بخوێنیتەوە.
+10. هەرگیز بانگەشەی ئەوە مەکە کە شتێکت لە وێنەکە بینیوە ئەگەر بە ڕوونی ناتوانیت بیبینیت.
 `;
 
-    /*
-      =========================
-      MESSAGE PREPARATION
-      =========================
-    */
 
-    const contents = messages
-      .filter(
-        (m) =>
-          m &&
-          m.content &&
-          (m.role === "user" ||
-            m.role === "assistant")
-      )
-      .map((m) => ({
-        role:
-          m.role === "assistant"
-            ? "assistant"
-            : "user",
-        content: String(m.content)
-      }));
+    /* =========================
+       PREPARE TEXT MESSAGES
+    ========================= */
 
-    /*
-      =========================
-      OPENROUTER
-      =========================
-    */
+    const textMessages =
+      Array.isArray(messages)
+        ? messages
+            .filter(
+              (m) =>
+                m &&
+                typeof m.content ===
+                  "string" &&
+                m.content.trim() &&
+                (
+                  m.role === "user" ||
+                  m.role === "assistant"
+                )
+            )
+            .map(
+              (m) => ({
+                role:
+                  m.role ===
+                    "assistant"
+                    ? "assistant"
+                    : "user",
 
-    const response = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
+                content:
+                  String(
+                    m.content
+                  )
+              })
+            )
+        : [];
+
+
+    /* =========================
+       BUILD AI MESSAGES
+    ========================= */
+
+    let aiMessages = [
       {
-        method: "POST",
+        role: "system",
+        content: systemPrompt
+      },
+      ...textMessages
+    ];
 
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization":
-            `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "HTTP-Referer":
-            "https://my-ai-i04dqhlm8-saman-aig.vercel.app/",
-          "X-Title": "SamanAI"
-        },
 
-        body: JSON.stringify({
-          model: "openrouter/free",
+    /* =========================
+       IMAGE MESSAGE
+    ========================= */
 
-          messages: [
-            {
-              role: "system",
-              content: systemPrompt
-            },
-            ...contents
-          ],
+    if (image) {
 
-          temperature: 0.7,
-          max_tokens: 1200
-        })
-      }
-    );
+      /*
+        OpenRouter image input:
+        content = [
+          text,
+          image_url
+        ]
+      */
 
-    /*
-      =========================
-      SAFE RESPONSE PARSING
-      =========================
-    */
+      const mimeType =
+        imageType ||
+        "image/jpeg";
+
+
+      const imageData =
+        `data:${mimeType};base64,${image}`;
+
+
+      aiMessages.push({
+
+        role: "user",
+
+        content: [
+
+          {
+            type: "text",
+
+            text:
+              "تکایە ئەم وێنەیە بە وردی پشکنە و بە کوردیی سۆرانی وەڵامم بدە."
+          },
+
+          {
+            type: "image_url",
+
+            image_url: {
+              url: imageData
+            }
+
+          }
+
+        ]
+
+      });
+
+    }
+
+
+    /* =========================
+       OPENROUTER
+    ========================= */
+
+    const response =
+      await fetch(
+        "https://openrouter.ai/api/v1/chat/completions",
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              `Bearer ${process.env.OPENROUTER_API_KEY}`,
+
+            "HTTP-Referer":
+              "https://my-ai-i04dqhlm8-saman-aig.vercel.app/",
+
+            "X-Title":
+              "SamanAI"
+
+          },
+
+          body:
+            JSON.stringify({
+
+              /*
+                Free router ـەکە
+                خۆکارانە model ـی free
+                هەڵدەبژێرێت.
+              */
+
+              model:
+                "openrouter/free",
+
+              messages:
+                aiMessages,
+
+              temperature:
+                0.7,
+
+              max_tokens:
+                1200
+
+            })
+
+        }
+      );
+
+
+    /* =========================
+       READ RESPONSE
+    ========================= */
 
     const responseText =
       await response.text();
 
+
     let data = null;
 
+
     try {
-      data = JSON.parse(responseText);
-    } catch {
+
+      data =
+        JSON.parse(
+          responseText
+        );
+
+    } catch (parseError) {
+
       console.error(
-        "OpenRouter returned non-JSON:",
+        "OpenRouter non-JSON response:",
         responseText
       );
 
+
       return res.status(502).json({
+
         error:
           "خزمەتگوزاری AI وەڵامێکی نادروستی گەڕاندەوە."
+
       });
+
     }
 
+
+    /* =========================
+       OPENROUTER ERROR
+    ========================= */
+
     if (!response.ok) {
+
       console.error(
         "OpenRouter error:",
         data
       );
 
+
+      const providerError =
+        data?.error?.message ||
+        data?.error?.code ||
+        null;
+
+
       return res.status(502).json({
+
         error:
-          data?.error?.message ||
+          providerError ||
           "کێشەیەک لە پەیوەندی بە AI ڕوویدا."
+
       });
+
     }
 
+
+    /* =========================
+       EXTRACT REPLY
+    ========================= */
+
     const reply =
-      data?.choices?.[0]?.message?.content;
+      data?.choices?.[0]
+        ?.message
+        ?.content;
+
 
     if (
-      typeof reply !== "string" ||
+      typeof reply !==
+        "string" ||
       !reply.trim()
     ) {
+
       console.error(
         "Invalid OpenRouter response:",
         data
       );
 
+
       return res.status(502).json({
+
         error:
           "AI وەڵامێکی دروستی نەگەڕاندەوە."
+
       });
+
     }
 
-    /*
-      =========================
-      FINAL RESPONSE
-      =========================
-    */
+
+    /* =========================
+       SUCCESS
+    ========================= */
 
     return res.status(200).json({
-      reply: reply.trim(),
+
+      reply:
+        reply.trim(),
+
       userId
+
     });
 
+
   } catch (error) {
+
     console.error(
       "SamanAI API error:",
       error
     );
 
+
+    /*
+      بۆ ئەوەی frontend بتوانێت
+      هەڵەی ڕاستەقینە ببینێت.
+    */
+
+    const message =
+      error?.message ||
+      "هەڵەی نەناسراو";
+
+
     return res.status(500).json({
+
       error:
-        "کێشەیەکی ناوخۆیی لە SamanAI ڕوویدا."
+        `کێشەیەکی ناوخۆیی لە SamanAI ڕوویدا: ${message}`
+
     });
+
   }
+
 }
